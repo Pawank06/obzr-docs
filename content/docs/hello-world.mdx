@@ -1,0 +1,76 @@
+# Hello World
+
+Get started with Clerk by adding authentication to your application in minutes.
+
+## Installation
+
+```bash
+npm install @clerk/nextjs
+```
+
+## Setup
+
+1. First, create a new file called `.env.local` in your project root and add your Clerk API keys:
+
+```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_*
+CLERK_SECRET_KEY=sk_test_*
+```
+
+2. Wrap your application with the `ClerkProvider` in `app/layout.tsx`:
+
+```tsx
+import { ClerkProvider } from '@clerk/nextjs'
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <ClerkProvider>
+      <html lang="en">
+        <body>{children}</body>
+      </html>
+    </ClerkProvider>
+  )
+}
+```
+
+## Add User Button
+
+Create a simple sign-in/sign-up button component:
+
+```tsx
+'use client'
+
+import { useUser, UserButton } from '@clerk/nextjs'
+
+export default function UserProfile() {
+  const { isSignedIn } = useUser()
+  
+  return (
+    <div className="flex items-center gap-4">
+      {isSignedIn ? (
+        <UserButton afterSignOutUrl="/" />
+      ) : (
+        <a href="/sign-in" className="text-sm font-medium">
+          Sign In
+        </a>
+      )}
+    </div>
+  )
+}
+```
+
+## Next Steps
+
+- [Add more authentication methods](https://clerk.com/docs/authentication)
+- [Customize the user experience](https://clerk.com/docs/customization)
+- [Deploy your application](https://clerk.com/docs/deployments)
+
+## Need help?
+
+- Join our [Discord community](https://clerk.com/discord)
+- Check out our [documentation](https://clerk.com/docs)
+- Open a [support ticket](https://clerk.com/support)
