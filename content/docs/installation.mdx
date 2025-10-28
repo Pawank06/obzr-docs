@@ -1,0 +1,398 @@
+# Installation
+
+Install the AgentOS SDK in your preferred programming language and environment.
+
+<InfoCallout title="System Requirements">
+  Before installing AgentOS, ensure your system meets these requirements:
+  - **Node.js**: Version 18.0 or higher
+  - **Python**: Version 3.9 or higher
+  - **Operating System**: macOS, Linux, or Windows
+  - **Memory**: Minimum 4GB RAM recommended
+</InfoCallout>
+
+<SectionDivider />
+
+## Node.js / TypeScript
+
+<Tabs defaultValue="npm">
+  <TabsList>
+    <TabsTrigger value="npm">npm</TabsTrigger>
+    <TabsTrigger value="yarn">yarn</TabsTrigger>
+    <TabsTrigger value="pnpm">pnpm</TabsTrigger>
+  </TabsList>
+  <TabsContent value="npm">
+    <CodeBlock language="bash">npm install @agentos/sdk</CodeBlock>
+  </TabsContent>
+  <TabsContent value="yarn">
+    <CodeBlock language="bash">yarn add @agentos/sdk</CodeBlock>
+  </TabsContent>
+  <TabsContent value="pnpm">
+    <CodeBlock language="bash">pnpm add @agentos/sdk</CodeBlock>
+  </TabsContent>
+</Tabs>
+
+### TypeScript Configuration
+
+<Card>
+  <CardHeader>
+    <CardTitle>Configure TypeScript</CardTitle>
+    <CardDescription>
+      If you're using TypeScript, ensure your tsconfig.json includes these settings
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <CodeBlock language="json" filename="tsconfig.json">
+{`{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true
+  }
+}`}
+    </CodeBlock>
+  </CardContent>
+</Card>
+
+<SectionDivider />
+
+## Python
+
+<Tabs defaultValue="pip">
+  <TabsList>
+    <TabsTrigger value="pip">pip</TabsTrigger>
+    <TabsTrigger value="poetry">poetry</TabsTrigger>
+    <TabsTrigger value="conda">conda</TabsTrigger>
+  </TabsList>
+  <TabsContent value="pip">
+    <CodeBlock language="bash">pip install agentos</CodeBlock>
+  </TabsContent>
+  <TabsContent value="poetry">
+    <CodeBlock language="bash">poetry add agentos</CodeBlock>
+  </TabsContent>
+  <TabsContent value="conda">
+    <CodeBlock language="bash">conda install -c conda-forge agentos</CodeBlock>
+  </TabsContent>
+</Tabs>
+
+### Virtual Environment (Recommended)
+
+<TipCallout title="Best Practice">
+  We recommend using a virtual environment to isolate your project dependencies.
+</TipCallout>
+
+<Tabs defaultValue="unix">
+  <TabsList>
+    <TabsTrigger value="unix">macOS/Linux</TabsTrigger>
+    <TabsTrigger value="windows">Windows</TabsTrigger>
+  </TabsList>
+  <TabsContent value="unix">
+    <CodeBlock language="bash">
+{`# Create virtual environment
+python -m venv venv
+
+# Activate
+source venv/bin/activate
+
+# Install AgentOS
+pip install agentos`}
+    </CodeBlock>
+  </TabsContent>
+  <TabsContent value="windows">
+    <CodeBlock language="bash">
+{`# Create virtual environment
+python -m venv venv
+
+# Activate
+venv\\Scripts\\activate
+
+# Install AgentOS
+pip install agentos`}
+    </CodeBlock>
+  </TabsContent>
+</Tabs>
+
+<SectionDivider />
+
+## JavaScript (Browser)
+
+<Card>
+  <CardHeader>
+    <CardTitle>Browser Installation</CardTitle>
+    <CardDescription>
+      For browser-based applications, use our CDN or bundle with your preferred bundler
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <Tabs defaultValue="cdn">
+      <TabsList>
+        <TabsTrigger value="cdn">CDN</TabsTrigger>
+        <TabsTrigger value="npm">npm</TabsTrigger>
+      </TabsList>
+      <TabsContent value="cdn">
+        <CodeBlock language="html">
+{`<script src="https://cdn.agentos.dev/sdk/latest/agentos.min.js"></script>`}
+        </CodeBlock>
+      </TabsContent>
+      <TabsContent value="npm">
+        <CodeBlock language="bash">
+npm install @agentos/sdk-browser
+        </CodeBlock>
+      </TabsContent>
+    </Tabs>
+  </CardContent>
+</Card>
+
+<SectionDivider />
+
+## REST API
+
+<SuccessCallout title="No Installation Required">
+  Access AgentOS directly via HTTP requests without any SDK installation.
+</SuccessCallout>
+
+<CodeBlock language="bash">
+{`curl -X POST https://api.agentos.dev/v1/agents/run \\
+  -H "Authorization: Bearer YOUR_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "agent": "my-agent",
+    "input": "Hello, world!"
+  }'`}
+</CodeBlock>
+
+<SectionDivider />
+
+## Verify Installation
+
+<Tabs defaultValue="typescript">
+  <TabsList>
+    <TabsTrigger value="typescript">TypeScript</TabsTrigger>
+    <TabsTrigger value="python">Python</TabsTrigger>
+  </TabsList>
+  <TabsContent value="typescript">
+    <CodeBlock language="typescript" filename="verify.ts">
+{`import { version } from '@agentos/sdk';
+
+console.log(\`AgentOS SDK version: \${version}\`);`}
+    </CodeBlock>
+  </TabsContent>
+  <TabsContent value="python">
+    <CodeBlock language="python" filename="verify.py">
+{`import agentos
+
+print(f"AgentOS SDK version: {agentos.__version__}")`}
+    </CodeBlock>
+  </TabsContent>
+</Tabs>
+
+<SectionDivider />
+
+## Configuration
+
+### API Key Setup
+
+<Step number={1} title="Create environment file">
+  Create a `.env` file in your project root:
+  
+  <CodeBlock language="bash" filename=".env">
+{`AGENTOS_API_KEY=your_api_key_here
+AGENTOS_API_URL=https://api.agentos.dev`}
+  </CodeBlock>
+</Step>
+
+<Step number={2} title="Configure programmatically (optional)">
+  Alternatively, configure the API key in your code:
+  
+  <Tabs defaultValue="typescript">
+    <TabsList>
+      <TabsTrigger value="typescript">TypeScript</TabsTrigger>
+      <TabsTrigger value="python">Python</TabsTrigger>
+    </TabsList>
+    <TabsContent value="typescript">
+      <CodeBlock language="typescript">
+{`import { configure } from '@agentos/sdk';
+
+configure({
+  apiKey: process.env.AGENTOS_API_KEY,
+  apiUrl: 'https://api.agentos.dev',
+});`}
+      </CodeBlock>
+    </TabsContent>
+    <TabsContent value="python">
+      <CodeBlock language="python">
+{`from agentos import configure
+
+configure(
+    api_key=os.getenv("AGENTOS_API_KEY"),
+    api_url="https://api.agentos.dev"
+)`}
+      </CodeBlock>
+    </TabsContent>
+  </Tabs>
+</Step>
+
+<SectionDivider />
+
+## Optional Dependencies
+
+<div className="space-y-8">
+  <div>
+    <h3 className="text-lg font-semibold mb-2">Observability Tools</h3>
+    <p className="text-sm text-muted-foreground mb-4">Enhanced monitoring and telemetry</p>
+    <Tabs defaultValue="node">
+      <TabsList>
+        <TabsTrigger value="node">Node.js</TabsTrigger>
+        <TabsTrigger value="python">Python</TabsTrigger>
+      </TabsList>
+      <TabsContent value="node">
+        <CodeBlock language="bash">npm install @agentos/telemetry</CodeBlock>
+      </TabsContent>
+      <TabsContent value="python">
+        <CodeBlock language="bash">pip install agentos[telemetry]</CodeBlock>
+      </TabsContent>
+    </Tabs>
+  </div>
+
+  <div>
+    <h3 className="text-lg font-semibold mb-2">Vector Database</h3>
+    <p className="text-sm text-muted-foreground mb-4">Advanced memory and knowledge graphs</p>
+    <Tabs defaultValue="node">
+      <TabsList>
+        <TabsTrigger value="node">Node.js</TabsTrigger>
+        <TabsTrigger value="python">Python</TabsTrigger>
+      </TabsList>
+      <TabsContent value="node">
+        <CodeBlock language="bash">npm install @agentos/vectordb</CodeBlock>
+      </TabsContent>
+      <TabsContent value="python">
+        <CodeBlock language="bash">pip install agentos[vectordb]</CodeBlock>
+      </TabsContent>
+    </Tabs>
+  </div>
+
+  <div>
+    <h3 className="text-lg font-semibold mb-2">Development Tools</h3>
+    <p className="text-sm text-muted-foreground mb-4">Local development and testing utilities</p>
+    <Tabs defaultValue="node">
+      <TabsList>
+        <TabsTrigger value="node">Node.js</TabsTrigger>
+        <TabsTrigger value="python">Python</TabsTrigger>
+      </TabsList>
+      <TabsContent value="node">
+        <CodeBlock language="bash">npm install --save-dev @agentos/dev-tools</CodeBlock>
+      </TabsContent>
+      <TabsContent value="python">
+        <CodeBlock language="bash">pip install agentos[dev]</CodeBlock>
+      </TabsContent>
+    </Tabs>
+  </div>
+</div>
+
+<SectionDivider />
+
+## Upgrading
+
+<Tabs defaultValue="npm">
+  <TabsList>
+    <TabsTrigger value="npm">npm</TabsTrigger>
+    <TabsTrigger value="pip">pip</TabsTrigger>
+  </TabsList>
+  <TabsContent value="npm">
+    <CodeBlock language="bash">npm update @agentos/sdk</CodeBlock>
+  </TabsContent>
+  <TabsContent value="pip">
+    <CodeBlock language="bash">pip install --upgrade agentos</CodeBlock>
+  </TabsContent>
+</Tabs>
+
+<SectionDivider />
+
+## Troubleshooting
+
+<Card>
+  <CardHeader>
+    <CardTitle>Installation Fails</CardTitle>
+    <CardDescription>Try these solutions if installation fails</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <div className="space-y-4">
+      <div>
+        <p className="text-sm font-medium mb-2">1. Clear package manager cache:</p>
+        <CodeBlock language="bash">
+{`npm cache clean --force
+# or
+pip cache purge`}
+        </CodeBlock>
+      </div>
+      
+      <div>
+        <p className="text-sm font-medium mb-2">2. Update your package manager:</p>
+        <CodeBlock language="bash">
+{`npm install -g npm@latest
+# or
+pip install --upgrade pip`}
+        </CodeBlock>
+      </div>
+    </div>
+  </CardContent>
+</Card>
+
+<Card className="mt-4">
+  <CardHeader>
+    <CardTitle>Import Errors</CardTitle>
+    <CardDescription>Ensure you're using the correct import syntax</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <CodeBlock language="typescript">
+{`// ESM
+import { Agent } from '@agentos/sdk';
+
+// CommonJS
+const { Agent } = require('@agentos/sdk');`}
+    </CodeBlock>
+  </CardContent>
+</Card>
+
+<Card className="mt-4">
+  <CardHeader>
+    <CardTitle>Version Conflicts</CardTitle>
+    <CardDescription>Check for conflicting dependencies</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <CodeBlock language="bash">
+{`npm ls @agentos/sdk
+# or
+pip show agentos`}
+    </CodeBlock>
+  </CardContent>
+</Card>
+
+<SectionDivider />
+
+## Next Steps
+
+<Card>
+  <CardContent className="pt-6">
+    <div className="space-y-4">
+      <div>
+        <h3 className="font-semibold mb-2">Get Started</h3>
+        <ul className="space-y-2 text-sm">
+          <li>→ [Quickstart](/docs/quickstart) - Build your first agent</li>
+          <li>→ [Core Concepts](/docs/core-concepts) - Learn the fundamentals</li>
+          <li>→ [Creating Agents](/docs/sdk/creating-agents) - Explore agent configuration</li>
+        </ul>
+      </div>
+      
+      <div>
+        <h3 className="font-semibold mb-2">Need Help?</h3>
+        <ul className="space-y-2 text-sm">
+          <li>→ [Discord Community](https://discord.gg/agentos)</li>
+          <li>→ [GitHub Issues](https://github.com/agentos/sdk/issues)</li>
+          <li>→ [Installation FAQ](https://agentos.dev/faq)</li>
+        </ul>
+      </div>
+    </div>
+  </CardContent>
+</Card>

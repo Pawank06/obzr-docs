@@ -1,0 +1,117 @@
+# Monitoring Workflows
+
+Monitor multi-agent workflows and orchestration patterns to ensure reliable execution and optimal performance.
+
+## Overview
+
+Workflow monitoring provides visibility into complex multi-agent systems, tracking execution flow, agent interactions, and overall system health.
+
+## Workflow Tracking
+
+```typescript
+import { Workflow, monitoring } from '@agentos/sdk';
+
+const workflow = new Workflow({
+  nodes: [/* workflow nodes */],
+  monitoring: {
+    enabled: true,
+    trackNodes: true,
+    trackEdges: true,
+  },
+});
+
+// Execute with monitoring
+const result = await workflow.execute({
+  input: 'Process this',
+});
+
+// View execution trace
+const trace = await monitoring.getTrace(result.executionId);
+```
+
+## Execution Visualization
+
+View workflow execution in real-time:
+
+```typescript
+monitoring.visualize(workflow, {
+  showProgress: true,
+  highlightActive: true,
+  showMetrics: true,
+});
+```
+
+## Performance Metrics
+
+Track workflow performance:
+- Total execution time
+- Node execution times
+- Edge traversal times
+- Bottleneck identification
+- Parallel execution efficiency
+
+## Error Tracking
+
+Monitor workflow failures:
+
+```typescript
+monitoring.on('workflow:error', (event) => {
+  console.log({
+    workflowId: event.workflowId,
+    nodeId: event.nodeId,
+    error: event.error,
+    context: event.context,
+  });
+});
+```
+
+## Health Checks
+
+Implement workflow health monitoring:
+
+```typescript
+const health = await monitoring.checkHealth(workflow);
+
+console.log({
+  status: health.status, // 'healthy', 'degraded', 'unhealthy'
+  issues: health.issues,
+  recommendations: health.recommendations,
+});
+```
+
+## Alerts
+
+Set up workflow alerts:
+
+```typescript
+monitoring.createAlert({
+  workflow: workflow.id,
+  condition: 'execution_time > 60000',
+  action: {
+    type: 'notification',
+    channels: ['email', 'slack'],
+  },
+});
+```
+
+## Best Practices
+
+- Monitor critical workflows
+- Set appropriate timeouts
+- Track execution patterns
+- Identify bottlenecks
+- Implement health checks
+- Set up alerts for failures
+- Review metrics regularly
+
+## Next Steps
+
+- **[Dashboard](/docs/observability/dashboard)** - Visualize workflow data
+- **[Cost Tracking](/docs/observability/cost-tracking)** - Monitor workflow costs
+- **[Workflow Graphs](/docs/orchestration/workflow-graphs)** - Build workflows
+
+## Resources
+
+- [Monitoring Guide](https://agentos.dev/monitoring)
+- [Workflow Optimization](https://agentos.dev/workflow-optimization)
+- [Troubleshooting](https://agentos.dev/troubleshooting)

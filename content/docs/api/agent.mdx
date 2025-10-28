@@ -1,0 +1,131 @@
+# Agent API
+
+Complete API reference for creating and managing agents in AgentOS.
+
+## Agent Class
+
+### Constructor
+
+<CodeBlock language="typescript">
+new Agent(config: AgentConfig): Agent
+</CodeBlock>
+
+<PropertyTable properties={[
+  { name: 'config.name', type: 'string', required: true, description: 'Agent name' },
+  { name: 'config.model', type: 'string', required: true, description: 'LLM model to use' },
+  { name: 'config.systemPrompt', type: 'string', description: 'System prompt' },
+  { name: 'config.temperature', type: 'number', description: 'Temperature (0-1)' },
+  { name: 'config.maxTokens', type: 'number', description: 'Max response tokens' },
+  { name: 'config.memory', type: 'MemoryConfig', description: 'Memory configuration' },
+  { name: 'config.capabilities', type: 'Capability[]', description: 'Agent capabilities' },
+]} />
+
+**Example:**
+
+<CodeBlock language="typescript" filename="agent-example.ts">
+{`const agent = new Agent({
+  name: 'MyAgent',
+  model: 'gpt-4',
+  systemPrompt: 'You are a helpful assistant',
+  temperature: 0.7,
+});`}
+</CodeBlock>
+
+## Methods
+
+### run()
+
+<ApiMethod 
+  method="POST" 
+  endpoint="agent.run(options: RunOptions)" 
+  description="Execute agent with input"
+/>
+
+<PropertyTable properties={[
+  { name: 'options.input', type: 'string', required: true, description: 'Input text' },
+  { name: 'options.context', type: 'object', description: 'Additional context' },
+  { name: 'options.timeout', type: 'number', description: 'Timeout in ms' },
+  { name: 'options.stream', type: 'boolean', description: 'Enable streaming' },
+]} />
+
+**Returns:**
+
+<CodeBlock language="typescript">
+{`{
+  output: string;
+  tokens: { prompt: number; completion: number };
+  cost: number;
+  latency: number;
+}`}
+</CodeBlock>
+
+### addCapability()
+
+Add a capability to the agent:
+
+```typescript
+agent.addCapability(capability: Capability): void
+```
+
+### save()
+
+Save agent state:
+
+```typescript
+agent.save(): Promise<void>
+```
+
+### load()
+
+Load agent from storage:
+
+```typescript
+Agent.load(id: string): Promise<Agent>
+```
+
+## Events
+
+```typescript
+agent.on('start', (event) => {});
+agent.on('complete', (event) => {});
+agent.on('error', (error) => {});
+agent.on('stream', (chunk) => {});
+```
+
+## Types
+
+### AgentConfig
+
+```typescript
+interface AgentConfig {
+  name: string;
+  model: string;
+  systemPrompt?: string;
+  temperature?: number;
+  maxTokens?: number;
+  memory?: MemoryConfig;
+  capabilities?: Capability[];
+}
+```
+
+### RunOptions
+
+```typescript
+interface RunOptions {
+  input: string;
+  context?: Record<string, any>;
+  timeout?: number;
+  stream?: boolean;
+}
+```
+
+## Next Steps
+
+- **[Memory API](/docs/api/memory)** - Memory API reference
+- **[Orchestrator API](/docs/api/orchestrator)** - Orchestration API
+- **[Creating Agents](/docs/sdk/creating-agents)** - Agent guide
+
+## Resources
+
+- [Full API Documentation](https://agentos.dev/api/agent)
+- [TypeScript Definitions](https://github.com/agentos/sdk/blob/main/types/agent.d.ts)

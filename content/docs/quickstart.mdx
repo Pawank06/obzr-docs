@@ -1,0 +1,202 @@
+# Quickstart
+
+Get your first AgentOS agent up and running in under 5 minutes.
+
+## Prerequisites
+
+Before you begin, make sure you have:
+
+- Node.js 18+ or Python 3.9+ installed
+- An AgentOS API key (sign up at [agentos.dev](https://agentos.dev))
+- Basic familiarity with JavaScript/TypeScript or Python
+
+## Installation
+
+<Tabs defaultValue="npm">
+  <TabsList>
+    <TabsTrigger value="npm">npm</TabsTrigger>
+    <TabsTrigger value="yarn">yarn</TabsTrigger>
+    <TabsTrigger value="pnpm">pnpm</TabsTrigger>
+    <TabsTrigger value="python">Python</TabsTrigger>
+  </TabsList>
+  <TabsContent value="npm">
+    <CodeBlock language="bash">npm install @agentos/sdk</CodeBlock>
+  </TabsContent>
+  <TabsContent value="yarn">
+    <CodeBlock language="bash">yarn add @agentos/sdk</CodeBlock>
+  </TabsContent>
+  <TabsContent value="pnpm">
+    <CodeBlock language="bash">pnpm add @agentos/sdk</CodeBlock>
+  </TabsContent>
+  <TabsContent value="python">
+    <CodeBlock language="bash">pip install agentos</CodeBlock>
+  </TabsContent>
+</Tabs>
+
+## Setup Your API Key
+
+<Step number={1} title="Create environment file">
+  Create a `.env` file in your project root:
+  
+  <CodeBlock language="bash" filename=".env">
+    AGENTOS_API_KEY=your_api_key_here
+  </CodeBlock>
+</Step>
+
+## Create Your First Agent
+
+<Step number={2} title="Initialize your agent">
+  <Tabs defaultValue="typescript">
+    <TabsList>
+      <TabsTrigger value="typescript">TypeScript</TabsTrigger>
+      <TabsTrigger value="python">Python</TabsTrigger>
+    </TabsList>
+    <TabsContent value="typescript">
+      <CodeBlock language="typescript" filename="index.ts">
+{`import { Agent } from '@agentos/sdk';
+
+// Initialize the agent
+const agent = new Agent({
+  name: 'MyFirstAgent',
+  model: 'gpt-4',
+  systemPrompt: 'You are a helpful assistant that answers questions concisely.',
+});
+
+// Run a task
+async function main() {
+  const response = await agent.run({
+    input: 'What is AgentOS?',
+  });
+  
+  console.log(response.output);
+}
+
+main();`}
+      </CodeBlock>
+    </TabsContent>
+    <TabsContent value="python">
+      <CodeBlock language="python" filename="main.py">
+{`from agentos import Agent
+
+# Initialize the agent
+agent = Agent(
+    name="MyFirstAgent",
+    model="gpt-4",
+    system_prompt="You are a helpful assistant that answers questions concisely."
+)
+
+# Run a task
+response = agent.run(
+    input="What is AgentOS?"
+)
+
+print(response.output)`}
+      </CodeBlock>
+    </TabsContent>
+  </Tabs>
+</Step>
+
+## Run Your Agent
+
+<Step number={3} title="Execute your script">
+  <Tabs defaultValue="typescript">
+    <TabsList>
+      <TabsTrigger value="typescript">TypeScript</TabsTrigger>
+      <TabsTrigger value="python">Python</TabsTrigger>
+    </TabsList>
+    <TabsContent value="typescript">
+      <CodeBlock language="bash">npx tsx index.ts</CodeBlock>
+    </TabsContent>
+    <TabsContent value="python">
+      <CodeBlock language="bash">python main.py</CodeBlock>
+    </TabsContent>
+  </Tabs>
+</Step>
+
+<SuccessCallout title="Success!">
+  You should see your agent's response printed to the console!
+</SuccessCallout>
+
+## Add Memory
+
+<Step number={4} title="Enable memory for context">
+  Make your agent remember previous interactions:
+
+  <CodeBlock language="typescript" filename="memory-agent.ts">
+{`import { Agent } from '@agentos/sdk';
+
+const agent = new Agent({
+  name: 'MemoryAgent',
+  model: 'gpt-4',
+  memory: {
+    enabled: true,
+    type: 'conversation',
+  },
+});
+
+// First interaction
+await agent.run({ input: 'My name is Alice' });
+
+// Second interaction - agent remembers!
+const response = await agent.run({ input: 'What is my name?' });
+console.log(response.output); // "Your name is Alice"`}
+  </CodeBlock>
+</Step>
+
+<TipCallout title="Pro Tip">
+  Memory enables your agents to maintain context across conversations, making them more intelligent and personalized.
+</TipCallout>
+
+## Next Steps
+
+Congratulations! You've created your first AgentOS agent. Here's what to explore next:
+
+- **[Core Concepts](/docs/core-concepts)** - Understand agents, memory, and tasks
+- **[Creating Agents](/docs/sdk/creating-agents)** - Deep dive into agent configuration
+- **[Memory System](/docs/sdk/memory-system)** - Learn about memory management
+- **[Examples](/docs/examples/customer-support)** - Explore real-world use cases
+
+## Common Issues
+
+<Card>
+  <CardHeader>
+    <CardTitle>API Key Not Found</CardTitle>
+    <CardDescription>
+      Make sure your `.env` file is in the correct location and properly formatted.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p className="text-sm mb-3">You can also set the API key programmatically:</p>
+    <CodeBlock language="typescript">
+{`import { configure } from '@agentos/sdk';
+
+configure({
+  apiKey: 'your_api_key_here',
+});`}
+    </CodeBlock>
+  </CardContent>
+</Card>
+
+<Card className="mt-4">
+  <CardHeader>
+    <CardTitle>Module Not Found</CardTitle>
+    <CardDescription>
+      Ensure you've installed the SDK in your project directory.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <CodeBlock language="bash">
+{`npm install @agentos/sdk
+# or
+pip install agentos`}
+    </CodeBlock>
+  </CardContent>
+</Card>
+
+## Get Help
+
+Need assistance? We're here to help:
+
+- [Discord Community](https://discord.gg/agentos)
+- [GitHub Issues](https://github.com/agentos/sdk/issues)
+- [Documentation](/docs)

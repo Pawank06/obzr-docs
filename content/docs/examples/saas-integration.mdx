@@ -1,0 +1,213 @@
+# SaaS Integration
+
+Build intelligent automation workflows that connect multiple SaaS platforms using AI agents.
+
+## Overview
+
+This example shows how to create agents that integrate with popular SaaS platforms like Slack, Salesforce, HubSpot, and more to automate business workflows.
+
+## Architecture
+
+```
+Trigger Event (Webhook/Schedule)
+    ↓
+Coordinator Agent
+    ↓
+├─→ Slack Agent
+├─→ Salesforce Agent
+├─→ Email Agent
+├─→ Analytics Agent
+    ↓
+Workflow Execution
+    ↓
+Notifications & Updates
+```
+
+## Implementation
+
+### Slack Integration Agent
+
+```typescript
+import { Agent } from '@agentos/sdk';
+import { WebClient } from '@slack/web-api';
+
+const slackClient = new WebClient(process.env.SLACK_TOKEN);
+
+const slackAgent = new Agent({
+  name: 'SlackAgent',
+  model: 'gpt-4',
+  systemPrompt: 'You manage Slack communications and notifications.',
+});
+
+slackAgent.addCapability({
+  name: 'sendSlackMessage',
+  description: 'Send a message to a Slack channel',
+  parameters: {
+    channel: { type: 'string', required: true },
+    message: { type: 'string', required: true },
+  },
+  execute: async ({ channel, message }) => {
+    const result = await slackClient.chat.postMessage({
+      channel,
+      text: message,
+    });
+    return { success: true, ts: result.ts };
+  },
+});
+```
+
+### Salesforce Integration Agent
+
+```typescript
+import jsforce from 'jsforce';
+
+const sfConnection = new jsforce.Connection({
+  loginUrl: 'https://login.salesforce.com',
+});
+
+await sfConnection.login(
+  process.env.SF_USERNAME,
+  process.env.SF_PASSWORD
+);
+
+const salesforceAgent = new Agent({
+  name: 'SalesforceAgent',
+  model: 'gpt-4',
+  systemPrompt: 'You manage Salesforce CRM operations.',
+});
+
+salesforceAgent.addCapability({
+  name: 'createLead',
+  description: 'Create a new lead in Salesforce',
+  parameters: {
+    firstName: { type: 'string', required: true },
+    lastName: { type: 'string', required: true },
+    email: { type: 'string', required: true },
+    company: { type: 'string', required: true },
+  },
+  execute: async (params) => {
+    const result = await sfConnection.sobject('Lead').create(params);
+    return { success: result.success, id: result.id };
+  },
+});
+```
+
+### Workflow Automation
+
+```typescript
+import { Workflow } from '@agentos/sdk';
+
+const integrationWorkflow = new Workflow({
+  nodes: [
+    { id: 'parse', agent: parserAgent },
+    { id: 'salesforce', agent: salesforceAgent },
+    { id: 'slack', agent: slackAgent },
+    { id: 'email', agent: emailAgent },
+  ],
+  edges: [
+    { from: 'parse', to: 'salesforce' },
+    { from: 'salesforce', to: 'slack' },
+    { from: 'salesforce', to: 'email' },
+  ],
+});
+
+// Handle webhook from form submission
+async function handleFormSubmission(formData: any) {
+  const result = await integrationWorkflow.execute({
+    input: formData,
+  });
+  
+  return result;
+}
+```
+
+## Common Integrations
+
+### Email (SendGrid)
+
+```typescript
+import sgMail from '@sendgrid/mail';
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+emailAgent.addCapability({
+  name: 'sendEmail',
+  description: 'Send an email',
+  execute: async ({ to, subject, body }) => {
+    await sgMail.send({ to, from: 'noreply@example.com', subject, text: body });
+    return { success: true };
+  },
+});
+```
+
+### Calendar (Google Calendar)
+
+```typescript
+import { google } from 'googleapis';
+
+const calendar = google.calendar('v3');
+
+calendarAgent.addCapability({
+  name: 'createEvent',
+  description: 'Create a calendar event',
+  execute: async ({ summary, start, end }) => {
+    const event = await calendar.events.insert({
+      calendarId: 'primary',
+      requestBody: { summary, start: { dateTime: start }, end: { dateTime: end } },
+    });
+    return { success: true, eventId: event.data.id };
+  },
+});
+```
+
+### CRM (HubSpot)
+
+```typescript
+import { Client } from '@hubspot/api-client';
+
+const hubspot = new Client({ accessToken: process.env.HUBSPOT_TOKEN });
+
+hubspotAgent.addCapability({
+  name: 'createContact',
+  description: 'Create a HubSpot contact',
+  execute: async ({ email, firstName, lastName }) => {
+    const contact = await hubspot.crm.contacts.basicApi.create({
+      properties: { email, firstname: firstName, lastname: lastName },
+    });
+    return { success: true, contactId: contact.id };
+  },
+});
+```
+
+## Use Cases
+
+- Lead capture and CRM sync
+- Customer onboarding automation
+- Support ticket management
+- Marketing campaign automation
+- Data synchronization
+- Notification workflows
+
+## Best Practices
+
+- Implement proper authentication
+- Handle rate limits
+- Use webhooks for real-time updates
+- Implement retry logic
+- Log all integrations
+- Monitor API usage
+- Secure API keys
+- Test integrations thoroughly
+
+## Next Steps
+
+- **[API Integration](/docs/sdk/api-integration)** - Learn API integration
+- **[Workflow Graphs](/docs/orchestration/workflow-graphs)** - Build workflows
+- **[Task Capabilities](/docs/sdk/task-capabilities)** - Add capabilities
+
+## Resources
+
+- [Full Example Code](https://github.com/agentos/examples/tree/main/saas-integration)
+- [Live Demo](https://demo.agentos.dev/saas-integration)
+- [Video Tutorial](https://agentos.dev/tutorials/saas-integration)
+- [Supported Integrations](https://agentos.dev/integrations)

@@ -1,0 +1,227 @@
+# Workflow Graphs
+
+Define complex agent workflows using directed graphs for flexible orchestration and control flow.
+
+## Overview
+
+Workflow graphs allow you to model agent interactions as nodes and edges, enabling sophisticated control flow including conditional branching, loops, and parallel execution.
+
+## Creating Workflows
+
+### Basic Workflow
+
+```typescript
+import { Workflow } from '@agentos/sdk';
+
+const workflow = new Workflow({
+  nodes: [
+    { id: 'start', agent: inputAgent },
+    { id: 'process', agent: processingAgent },
+    { id: 'end', agent: outputAgent },
+  ],
+  edges: [
+    { from: 'start', to: 'process' },
+    { from: 'process', to: 'end' },
+  ],
+});
+
+const result = await workflow.execute({ input: 'Process this data' });
+```
+
+### Conditional Branching
+
+```typescript
+const workflow = new Workflow({
+  nodes: [
+    { id: 'classify', agent: classifierAgent },
+    { id: 'technical', agent: technicalAgent },
+    { id: 'billing', agent: billingAgent },
+  ],
+  edges: [
+    {
+      from: 'classify',
+      to: 'technical',
+      condition: (output) => output.category === 'technical',
+    },
+    {
+      from: 'classify',
+      to: 'billing',
+      condition: (output) => output.category === 'billing',
+    },
+  ],
+});
+```
+
+### Parallel Execution
+
+```typescript
+const workflow = new Workflow({
+  nodes: [
+    { id: 'input', agent: inputAgent },
+    { id: 'analyze1', agent: analyzer1 },
+    { id: 'analyze2', agent: analyzer2 },
+    { id: 'merge', agent: mergeAgent },
+  ],
+  edges: [
+    { from: 'input', to: 'analyze1' },
+    { from: 'input', to: 'analyze2' },
+    { from: 'analyze1', to: 'merge' },
+    { from: 'analyze2', to: 'merge' },
+  ],
+});
+```
+
+## Node Types
+
+### Agent Nodes
+
+Execute an agent:
+
+```typescript
+{
+  id: 'process',
+  type: 'agent',
+  agent: processingAgent,
+  config: {
+    timeout: 30000,
+    retries: 3,
+  },
+}
+```
+
+### Function Nodes
+
+Execute custom logic:
+
+```typescript
+{
+  id: 'transform',
+  type: 'function',
+  execute: async (input) => {
+    return { transformed: input.data.toUpperCase() };
+  },
+}
+```
+
+### Decision Nodes
+
+Route based on conditions:
+
+```typescript
+{
+  id: 'decision',
+  type: 'decision',
+  evaluate: (input) => {
+    return input.score > 0.8 ? 'high' : 'low';
+  },
+}
+```
+
+## Edge Configuration
+
+### Basic Edges
+
+```typescript
+{ from: 'nodeA', to: 'nodeB' }
+```
+
+### Conditional Edges
+
+```typescript
+{
+  from: 'classifier',
+  to: 'handler',
+  condition: (output) => output.confidence > 0.9,
+}
+```
+
+### Weighted Edges
+
+```typescript
+{
+  from: 'start',
+  to: 'option1',
+  weight: 0.7,
+}
+```
+
+## Control Flow
+
+### Loops
+
+```typescript
+const workflow = new Workflow({
+  nodes: [
+    { id: 'process', agent: processingAgent },
+    { id: 'check', type: 'decision' },
+  ],
+  edges: [
+    { from: 'process', to: 'check' },
+    {
+      from: 'check',
+      to: 'process',
+      condition: (output) => !output.complete,
+    },
+    {
+      from: 'check',
+      to: 'end',
+      condition: (output) => output.complete,
+    },
+  ],
+  maxIterations: 10,
+});
+```
+
+### Error Handling
+
+```typescript
+const workflow = new Workflow({
+  nodes: [
+    { id: 'main', agent: mainAgent },
+    { id: 'fallback', agent: fallbackAgent },
+  ],
+  edges: [
+    { from: 'main', to: 'end', onSuccess: true },
+    { from: 'main', to: 'fallback', onError: true },
+  ],
+});
+```
+
+## Visualization
+
+```typescript
+// Export workflow as DOT format
+const dot = workflow.toDOT();
+
+// Export as JSON
+const json = workflow.toJSON();
+
+// Render visualization
+await workflow.visualize({
+  output: './workflow.png',
+  format: 'png',
+});
+```
+
+## Best Practices
+
+- Keep workflows simple and understandable
+- Use descriptive node IDs
+- Implement proper error handling
+- Set reasonable timeouts and iteration limits
+- Test workflows thoroughly
+- Document complex control flow
+- Monitor workflow execution
+
+## Next Steps
+
+- **[Runtime Manager](/docs/orchestration/runtime-manager)** - Manage workflow execution
+- **[Agent Collaboration](/docs/orchestration/collaboration)** - Advanced patterns
+- **[Observability](/docs/observability/monitoring)** - Monitor workflows
+- **[Examples](/docs/examples/knowledge-systems)** - See workflows in action
+
+## Resources
+
+- [Workflow Design Patterns](https://agentos.dev/workflow-patterns)
+- [Graph Theory Basics](https://agentos.dev/graph-theory)
+- [Workflow Optimization](https://agentos.dev/workflow-optimization)

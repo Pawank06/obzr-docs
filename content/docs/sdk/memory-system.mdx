@@ -1,0 +1,495 @@
+# Memory System
+
+Build agents that remember and learn from past interactions using AgentOS's powerful memory system.
+
+## Overview
+
+The memory system enables agents to maintain context across conversations, store important information, and retrieve relevant knowledge when needed. AgentOS provides both short-term and long-term memory capabilities.
+
+## Memory Types
+
+### Short-Term Memory (STM)
+
+Temporary storage for the current conversation or session:
+
+```typescript
+const agent = new Agent({
+  name: 'ConversationalAgent',
+  model: 'gpt-4',
+  memory: {
+    shortTerm: {
+      enabled: true,
+      maxMessages: 10,
+      strategy: 'sliding-window',
+    },
+  },
+});
+```
+
+**Use cases:**
+- Maintaining conversation context
+- Tracking current task state
+- Temporary data storage
+
+### Long-Term Memory (LTM)
+
+Persistent storage that survives across sessions:
+
+```typescript
+const agent = new Agent({
+  name: 'KnowledgeAgent',
+  model: 'gpt-4',
+  memory: {
+    longTerm: {
+      enabled: true,
+      vectorStore: 'pinecone',
+      embeddingModel: 'text-embedding-3-small',
+      namespace: 'user-knowledge',
+    },
+  },
+});
+```
+
+**Use cases:**
+- Storing user preferences
+- Building knowledge bases
+- Learning from past interactions
+
+## Configuration
+
+### Basic Setup
+
+```typescript
+import { Agent, MemoryConfig } from '@agentos/sdk';
+
+const memoryConfig: MemoryConfig = {
+  enabled: true,
+  shortTerm: {
+    maxMessages: 20,
+    strategy: 'sliding-window',
+  },
+  longTerm: {
+    enabled: true,
+    vectorStore: 'pinecone',
+  },
+};
+
+const agent = new Agent({
+  name: 'MemoryAgent',
+  model: 'gpt-4',
+  memory: memoryConfig,
+});
+```
+
+### Vector Store Options
+
+AgentOS supports multiple vector databases:
+
+```typescript
+// Pinecone
+vectorStore: 'pinecone'
+vectorStoreConfig: {
+  apiKey: process.env.PINECONE_API_KEY,
+  environment: 'us-west1-gcp',
+  index: 'agent-memory',
+}
+
+// Weaviate
+vectorStore: 'weaviate'
+vectorStoreConfig: {
+  url: 'http://localhost:8080',
+  apiKey: process.env.WEAVIATE_API_KEY,
+}
+
+// Qdrant
+vectorStore: 'qdrant'
+vectorStoreConfig: {
+  url: 'http://localhost:6333',
+  collection: 'agent-memory',
+}
+```
+
+## Working with Memory
+
+### Storing Information
+
+```typescript
+// Automatically stored during conversation
+await agent.run({
+  input: 'My favorite color is blue',
+});
+
+// Manually store information
+await agent.memory.store({
+  content: 'User prefers email notifications',
+  metadata: {
+    type: 'preference',
+    userId: 'user-123',
+  },
+});
+```
+
+### Retrieving Information
+
+```typescript
+// Automatic retrieval based on context
+const response = await agent.run({
+  input: 'What is my favorite color?',
+});
+
+// Manual retrieval
+const memories = await agent.memory.search({
+  query: 'user preferences',
+  limit: 5,
+  filter: { type: 'preference' },
+});
+```
+
+### Updating Memory
+
+```typescript
+// Update existing memory
+await agent.memory.update({
+  id: 'memory-id-123',
+  content: 'User prefers SMS notifications',
+  metadata: {
+    type: 'preference',
+    updatedAt: Date.now(),
+  },
+});
+```
+
+### Deleting Memory
+
+```typescript
+// Delete specific memory
+await agent.memory.delete('memory-id-123');
+
+// Clear all memory for a user
+await agent.memory.clear({
+  filter: { userId: 'user-123' },
+});
+```
+
+## Memory Strategies
+
+### Sliding Window
+
+Keep the most recent N messages:
+
+```typescript
+memory: {
+  shortTerm: {
+    strategy: 'sliding-window',
+    maxMessages: 10,
+  },
+}
+```
+
+### Token-Based
+
+Limit memory by token count:
+
+```typescript
+memory: {
+  shortTerm: {
+    strategy: 'token-based',
+    maxTokens: 4000,
+  },
+}
+```
+
+### Summarization
+
+Automatically summarize old conversations:
+
+```typescript
+memory: {
+  shortTerm: {
+    strategy: 'summarization',
+    maxMessages: 20,
+    summarizeAfter: 10,
+  },
+}
+```
+
+### Semantic
+
+Keep semantically relevant messages:
+
+```typescript
+memory: {
+  shortTerm: {
+    strategy: 'semantic',
+    relevanceThreshold: 0.7,
+    maxMessages: 15,
+  },
+}
+```
+
+## Advanced Features
+
+### Memory Namespaces
+
+Organize memory by namespace:
+
+```typescript
+const agent = new Agent({
+  memory: {
+    longTerm: {
+      enabled: true,
+      namespace: 'customer-support',
+    },
+  },
+});
+
+// Store in specific namespace
+await agent.memory.store({
+  content: 'Product issue resolved',
+  namespace: 'tickets',
+});
+```
+
+### Memory Metadata
+
+Add rich metadata for filtering:
+
+```typescript
+await agent.memory.store({
+  content: 'User reported bug in payment flow',
+  metadata: {
+    type: 'bug-report',
+    severity: 'high',
+    userId: 'user-123',
+    timestamp: Date.now(),
+    tags: ['payment', 'bug'],
+  },
+});
+
+// Query with metadata filters
+const bugs = await agent.memory.search({
+  query: 'payment issues',
+  filter: {
+    type: 'bug-report',
+    severity: 'high',
+  },
+});
+```
+
+### Memory Embeddings
+
+Customize embedding models:
+
+```typescript
+memory: {
+  longTerm: {
+    enabled: true,
+    embeddingModel: 'text-embedding-3-large',
+    embeddingDimensions: 3072,
+  },
+}
+```
+
+### Memory Expiration
+
+Set automatic expiration:
+
+```typescript
+await agent.memory.store({
+  content: 'Temporary session data',
+  expiresAt: Date.now() + 3600000, // 1 hour
+});
+```
+
+## Memory Patterns
+
+### User Profiles
+
+Build persistent user profiles:
+
+```typescript
+class UserProfileAgent {
+  async updateProfile(userId: string, info: any) {
+    await this.agent.memory.store({
+      content: JSON.stringify(info),
+      metadata: {
+        type: 'profile',
+        userId,
+      },
+    });
+  }
+
+  async getProfile(userId: string) {
+    const memories = await this.agent.memory.search({
+      query: 'user profile',
+      filter: { type: 'profile', userId },
+      limit: 1,
+    });
+    return memories[0];
+  }
+}
+```
+
+### Knowledge Base
+
+Create a searchable knowledge base:
+
+```typescript
+// Add documents
+await agent.memory.storeMany([
+  {
+    content: 'AgentOS supports multiple LLM providers',
+    metadata: { type: 'documentation', topic: 'features' },
+  },
+  {
+    content: 'Memory can be configured per agent',
+    metadata: { type: 'documentation', topic: 'memory' },
+  },
+]);
+
+// Search knowledge base
+const docs = await agent.memory.search({
+  query: 'How to configure memory?',
+  filter: { type: 'documentation' },
+});
+```
+
+### Conversation History
+
+Maintain conversation threads:
+
+```typescript
+const conversation = agent.createConversation({
+  userId: 'user-123',
+  threadId: 'thread-456',
+});
+
+// All messages automatically stored
+await conversation.addMessage({
+  role: 'user',
+  content: 'Hello',
+});
+
+// Retrieve conversation history
+const history = await conversation.getHistory();
+```
+
+## Performance Optimization
+
+### Caching
+
+Enable memory caching:
+
+```typescript
+memory: {
+  cache: {
+    enabled: true,
+    ttl: 300, // 5 minutes
+    maxSize: 1000,
+  },
+}
+```
+
+### Batch Operations
+
+Store multiple memories efficiently:
+
+```typescript
+await agent.memory.storeMany([
+  { content: 'Memory 1', metadata: { type: 'fact' } },
+  { content: 'Memory 2', metadata: { type: 'fact' } },
+  { content: 'Memory 3', metadata: { type: 'fact' } },
+]);
+```
+
+### Lazy Loading
+
+Load memory on demand:
+
+```typescript
+memory: {
+  lazyLoad: true,
+  loadOnDemand: true,
+}
+```
+
+## Best Practices
+
+### Memory Hygiene
+
+- Regularly clean up old or irrelevant memories
+- Use expiration for temporary data
+- Implement memory limits to control costs
+- Monitor memory usage and performance
+
+### Metadata Design
+
+- Use consistent metadata schemas
+- Include timestamps for all memories
+- Add user IDs for multi-tenant applications
+- Use tags for flexible categorization
+
+### Security
+
+```typescript
+// Encrypt sensitive data
+await agent.memory.store({
+  content: encrypt(sensitiveData),
+  metadata: {
+    encrypted: true,
+    userId: 'user-123',
+  },
+});
+
+// Filter by user to prevent data leakage
+const userMemories = await agent.memory.search({
+  query: 'preferences',
+  filter: { userId: currentUserId },
+});
+```
+
+## Troubleshooting
+
+### Memory Not Persisting
+
+Check vector store configuration:
+
+```typescript
+// Verify connection
+await agent.memory.healthCheck();
+
+// Check storage
+const stats = await agent.memory.getStats();
+console.log('Total memories:', stats.count);
+```
+
+### Slow Retrieval
+
+Optimize queries:
+
+```typescript
+// Use filters to narrow search
+const memories = await agent.memory.search({
+  query: 'user preferences',
+  filter: { userId: 'user-123', type: 'preference' },
+  limit: 5, // Limit results
+});
+
+// Use caching
+memory: {
+  cache: { enabled: true },
+}
+```
+
+## Next Steps
+
+- **[STM & LTM](/docs/sdk/stm-ltm)** - Deep dive into memory types
+- **[Persistence Layer](/docs/sdk/persistence)** - Configure storage backends
+- **[Memory API](/docs/api/memory)** - Complete API reference
+- **[Knowledge Systems](/docs/examples/knowledge-systems)** - Build a knowledge base
+
+## Resources
+
+- [Memory Best Practices](https://agentos.dev/memory-best-practices)
+- [Vector Store Comparison](https://agentos.dev/vector-stores)
+- [Memory Performance Guide](https://agentos.dev/memory-performance)

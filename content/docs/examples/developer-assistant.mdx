@@ -1,0 +1,157 @@
+# Developer Assistant
+
+Build an AI-powered coding assistant that helps with code generation, debugging, and documentation.
+
+## Overview
+
+This example shows how to create a developer assistant using multiple specialized agents for different coding tasks.
+
+## Architecture
+
+```
+Developer Request
+    ↓
+Coordinator Agent
+    ↓
+├─→ Code Generation Agent
+├─→ Code Review Agent
+├─→ Documentation Agent
+├─→ Debugging Agent
+    ↓
+Integrated Response
+```
+
+## Implementation
+
+### Code Generation Agent
+
+```typescript
+import { Agent, capabilities } from '@agentos/sdk';
+
+const codeGenAgent = new Agent({
+  name: 'CodeGenerator',
+  model: 'gpt-4',
+  systemPrompt: `You are an expert programmer. Generate clean, well-documented code.
+    - Follow best practices
+    - Include error handling
+    - Add helpful comments
+    - Use modern syntax`,
+  capabilities: [
+    capabilities.codeExecution({
+      languages: ['javascript', 'python', 'typescript'],
+      sandbox: true,
+    }),
+  ],
+});
+```
+
+### Code Review Agent
+
+```typescript
+const reviewAgent = new Agent({
+  name: 'CodeReviewer',
+  model: 'gpt-4',
+  systemPrompt: `You review code for:
+    - Bugs and errors
+    - Performance issues
+    - Security vulnerabilities
+    - Best practices
+    - Code style`,
+});
+```
+
+### Multi-Agent Workflow
+
+```typescript
+import { Workflow } from '@agentos/sdk';
+
+const devWorkflow = new Workflow({
+  nodes: [
+    { id: 'generate', agent: codeGenAgent },
+    { id: 'review', agent: reviewAgent },
+    { id: 'refine', agent: codeGenAgent },
+    { id: 'document', agent: docAgent },
+  ],
+  edges: [
+    { from: 'generate', to: 'review' },
+    { from: 'review', to: 'refine' },
+    { from: 'refine', to: 'document' },
+  ],
+});
+
+// Generate and review code
+const result = await devWorkflow.execute({
+  input: 'Create a REST API endpoint for user authentication',
+});
+```
+
+## Features
+
+### Code Execution
+
+```typescript
+// Test generated code
+const testResult = await codeGenAgent.run({
+  input: 'Generate a function to calculate fibonacci numbers and test it',
+});
+```
+
+### Debugging Assistant
+
+```typescript
+const debugAgent = new Agent({
+  name: 'Debugger',
+  model: 'gpt-4',
+  systemPrompt: 'You help debug code by analyzing errors and suggesting fixes.',
+});
+
+// Debug code
+const fix = await debugAgent.run({
+  input: `This code has an error: ${code}\nError: ${errorMessage}`,
+});
+```
+
+### Documentation Generation
+
+```typescript
+const docAgent = new Agent({
+  name: 'Documenter',
+  model: 'gpt-4',
+  systemPrompt: 'You generate clear, comprehensive documentation for code.',
+});
+
+// Generate docs
+const docs = await docAgent.run({
+  input: `Generate documentation for this code: ${code}`,
+});
+```
+
+## Use Cases
+
+- Code generation from natural language
+- Automated code review
+- Bug fixing and debugging
+- Documentation generation
+- Code refactoring suggestions
+- Test generation
+
+## Best Practices
+
+- Validate generated code
+- Run security checks
+- Test in sandboxed environment
+- Review before deployment
+- Keep context of project structure
+- Use appropriate models for complexity
+
+## Next Steps
+
+- **[Task Capabilities](/docs/sdk/task-capabilities)** - Add custom capabilities
+- **[Workflow Graphs](/docs/orchestration/workflow-graphs)** - Build workflows
+- **[Code Execution](https://agentos.dev/code-execution)** - Safe code execution
+
+## Resources
+
+- [Full Example Code](https://github.com/agentos/examples/tree/main/developer-assistant)
+- [Live Demo](https://demo.agentos.dev/developer-assistant)
+- [Video Tutorial](https://agentos.dev/tutorials/developer-assistant)

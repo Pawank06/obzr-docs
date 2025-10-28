@@ -1,0 +1,235 @@
+# Runtime Manager
+
+Manage and monitor agent execution, resource allocation, and workflow lifecycle in production environments.
+
+## Overview
+
+The Runtime Manager provides centralized control over agent execution, enabling you to start, stop, pause, and monitor agents and workflows in real-time.
+
+## Basic Usage
+
+```typescript
+import { RuntimeManager } from '@agentos/sdk';
+
+const runtime = new RuntimeManager({
+  maxConcurrentAgents: 10,
+  resourceLimits: {
+    memory: '2GB',
+    cpu: '2 cores',
+  },
+});
+
+// Start an agent
+const execution = await runtime.start(agent, {
+  input: 'Process this task',
+});
+
+// Monitor execution
+console.log(execution.status); // 'running'
+```
+
+## Execution Control
+
+### Starting Execution
+
+```typescript
+const execution = await runtime.start(agent, {
+  input: 'Task input',
+  priority: 'high',
+  timeout: 60000,
+});
+```
+
+### Pausing and Resuming
+
+```typescript
+// Pause execution
+await runtime.pause(execution.id);
+
+// Resume execution
+await runtime.resume(execution.id);
+```
+
+### Stopping Execution
+
+```typescript
+// Graceful stop
+await runtime.stop(execution.id);
+
+// Force stop
+await runtime.kill(execution.id);
+```
+
+## Resource Management
+
+### Resource Limits
+
+```typescript
+const runtime = new RuntimeManager({
+  resourceLimits: {
+    memory: '4GB',
+    cpu: '4 cores',
+    maxTokens: 100000,
+    maxCost: 10.00,
+  },
+});
+```
+
+### Resource Monitoring
+
+```typescript
+const usage = await runtime.getResourceUsage(execution.id);
+
+console.log({
+  memory: usage.memory,
+  cpu: usage.cpu,
+  tokens: usage.tokens,
+  cost: usage.cost,
+});
+```
+
+## Execution Queues
+
+### Priority Queues
+
+```typescript
+const runtime = new RuntimeManager({
+  queue: {
+    type: 'priority',
+    maxSize: 1000,
+  },
+});
+
+// High priority execution
+await runtime.start(agent, {
+  input: 'Urgent task',
+  priority: 10,
+});
+
+// Low priority execution
+await runtime.start(agent, {
+  input: 'Background task',
+  priority: 1,
+});
+```
+
+### Rate Limiting
+
+```typescript
+const runtime = new RuntimeManager({
+  rateLimit: {
+    maxExecutionsPerMinute: 60,
+    maxConcurrent: 10,
+  },
+});
+```
+
+## Monitoring
+
+### Execution Status
+
+```typescript
+const status = await runtime.getStatus(execution.id);
+
+console.log({
+  state: status.state, // 'pending', 'running', 'completed', 'failed'
+  progress: status.progress,
+  startedAt: status.startedAt,
+  duration: status.duration,
+});
+```
+
+### Real-time Updates
+
+```typescript
+runtime.on('execution:start', (execution) => {
+  console.log('Started:', execution.id);
+});
+
+runtime.on('execution:complete', (execution) => {
+  console.log('Completed:', execution.id);
+});
+
+runtime.on('execution:error', (execution, error) => {
+  console.error('Error:', execution.id, error);
+});
+```
+
+## Scaling
+
+### Horizontal Scaling
+
+```typescript
+const runtime = new RuntimeManager({
+  scaling: {
+    type: 'horizontal',
+    minInstances: 2,
+    maxInstances: 10,
+    targetCPU: 70,
+  },
+});
+```
+
+### Load Balancing
+
+```typescript
+const runtime = new RuntimeManager({
+  loadBalancer: {
+    strategy: 'round-robin', // or 'least-connections', 'random'
+    healthCheck: {
+      interval: 30000,
+      timeout: 5000,
+    },
+  },
+});
+```
+
+## Error Handling
+
+### Retry Policies
+
+```typescript
+const runtime = new RuntimeManager({
+  retry: {
+    maxAttempts: 3,
+    backoff: 'exponential',
+    retryableErrors: ['TIMEOUT', 'RATE_LIMIT'],
+  },
+});
+```
+
+### Fallback Strategies
+
+```typescript
+await runtime.start(agent, {
+  input: 'Task',
+  fallback: {
+    agent: fallbackAgent,
+    condition: (error) => error.code === 'MODEL_UNAVAILABLE',
+  },
+});
+```
+
+## Best Practices
+
+- Set appropriate resource limits
+- Implement proper error handling
+- Monitor execution metrics
+- Use priority queues for critical tasks
+- Configure retry policies
+- Test scaling configurations
+- Log execution events
+- Clean up completed executions
+
+## Next Steps
+
+- **[Agent Collaboration](/docs/orchestration/collaboration)** - Advanced patterns
+- **[Observability](/docs/observability/monitoring)** - Monitor runtime
+- **[Multi-Agent Systems](/docs/orchestration/multi-agent)** - Coordinate agents
+- **[Examples](/docs/examples/customer-support)** - See runtime management in action
+
+## Resources
+
+- [Runtime Configuration Guide](https://agentos.dev/runtime-config)
+- [Scaling Strategies](https://agentos.dev/scaling)
+- [Performance Tuning](https://agentos.dev/performance)

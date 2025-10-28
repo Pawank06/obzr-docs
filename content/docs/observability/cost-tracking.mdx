@@ -1,0 +1,154 @@
+# Cost & Token Tracking
+
+Monitor and optimize LLM costs and token usage across your agent systems.
+
+## Overview
+
+Cost tracking helps you understand and control spending on LLM API calls, storage, and other resources, enabling budget management and cost optimization.
+
+## Automatic Cost Tracking
+
+AgentOS automatically tracks costs:
+
+```typescript
+import { Agent } from '@agentos/sdk';
+
+const agent = new Agent({
+  name: 'MyAgent',
+  model: 'gpt-4',
+  costTracking: {
+    enabled: true,
+    budget: {
+      daily: 100.00,
+      monthly: 2000.00,
+    },
+  },
+});
+```
+
+## Cost Breakdown
+
+View detailed cost information:
+
+```typescript
+const costs = await agent.getCosts({
+  timeRange: 'last-30-days',
+  groupBy: 'day',
+});
+
+console.log({
+  total: costs.total,
+  byModel: costs.byModel,
+  byAgent: costs.byAgent,
+  tokens: costs.tokens,
+});
+```
+
+## Token Usage
+
+Track token consumption:
+
+```typescript
+const usage = await agent.getTokenUsage();
+
+console.log({
+  promptTokens: usage.promptTokens,
+  completionTokens: usage.completionTokens,
+  totalTokens: usage.totalTokens,
+  cost: usage.estimatedCost,
+});
+```
+
+## Budget Alerts
+
+Set up budget notifications:
+
+```typescript
+agent.setBudgetAlert({
+  threshold: 80, // Alert at 80% of budget
+  period: 'daily',
+  action: {
+    type: 'notification',
+    channels: ['email'],
+  },
+});
+```
+
+## Cost Optimization
+
+### Model Selection
+
+Choose cost-effective models:
+
+```typescript
+// Use cheaper model for simple tasks
+const simpleAgent = new Agent({
+  model: 'gpt-3.5-turbo', // Lower cost
+});
+
+// Use premium model for complex tasks
+const complexAgent = new Agent({
+  model: 'gpt-4', // Higher quality
+});
+```
+
+### Token Limits
+
+Control token usage:
+
+```typescript
+const agent = new Agent({
+  model: 'gpt-4',
+  maxTokens: 500, // Limit response length
+  temperature: 0.3, // More focused responses
+});
+```
+
+### Caching
+
+Reduce redundant calls:
+
+```typescript
+const agent = new Agent({
+  model: 'gpt-4',
+  cache: {
+    enabled: true,
+    ttl: 3600, // Cache for 1 hour
+  },
+});
+```
+
+## Cost Reports
+
+Generate cost reports:
+
+```typescript
+const report = await agent.generateCostReport({
+  period: 'monthly',
+  format: 'pdf',
+  includeBreakdown: true,
+});
+```
+
+## Best Practices
+
+- Monitor costs regularly
+- Set appropriate budgets
+- Use cost-effective models when possible
+- Implement caching strategies
+- Limit token usage
+- Review high-cost operations
+- Optimize prompts for efficiency
+- Track costs by feature/user
+
+## Next Steps
+
+- **[Dashboard](/docs/observability/dashboard)** - Visualize costs
+- **[Telemetry](/docs/observability/telemetry)** - Track usage
+- **[Monitoring](/docs/observability/monitoring)** - Monitor systems
+
+## Resources
+
+- [Cost Optimization Guide](https://agentos.dev/cost-optimization)
+- [Pricing Calculator](https://agentos.dev/pricing)
+- [Budget Management](https://agentos.dev/budgets)

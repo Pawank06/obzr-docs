@@ -1,0 +1,115 @@
+# Dashboard Overview
+
+Monitor and analyze your agent systems with AgentOS's comprehensive observability dashboard.
+
+## Overview
+
+The AgentOS dashboard provides real-time insights into agent performance, costs, errors, and usage patterns, helping you optimize and troubleshoot your agent systems.
+
+## Key Features
+
+- Real-time agent execution monitoring
+- Cost and token usage tracking
+- Error and performance analytics
+- Custom metrics and alerts
+- Historical data analysis
+- Multi-agent system visualization
+
+## Accessing the Dashboard
+
+```typescript
+import { Dashboard } from '@agentos/sdk';
+
+const dashboard = new Dashboard({
+  apiKey: process.env.AGENTOS_API_KEY,
+  projectId: 'your-project-id',
+});
+
+// Open dashboard
+await dashboard.open();
+```
+
+## Dashboard Sections
+
+### Agent Performance
+
+Monitor agent execution metrics:
+- Response times
+- Success/failure rates
+- Throughput
+- Latency percentiles
+
+### Cost Tracking
+
+Track spending across:
+- LLM API calls
+- Token usage
+- Storage costs
+- Total spend by agent
+
+### Error Analytics
+
+Identify and diagnose issues:
+- Error rates and types
+- Stack traces
+- Error patterns
+- Resolution status
+
+### Usage Patterns
+
+Understand how agents are used:
+- Request volume over time
+- Peak usage periods
+- User distribution
+- Feature adoption
+
+## Custom Dashboards
+
+Create custom views:
+
+```typescript
+const customDashboard = dashboard.create({
+  name: 'Production Monitoring',
+  widgets: [
+    { type: 'metric', metric: 'response_time', aggregation: 'p95' },
+    { type: 'chart', metric: 'requests', timeRange: '24h' },
+    { type: 'table', data: 'recent_errors' },
+  ],
+});
+```
+
+## Alerts
+
+Set up notifications:
+
+```typescript
+dashboard.createAlert({
+  name: 'High Error Rate',
+  condition: 'error_rate > 0.05',
+  notification: {
+    channels: ['email', 'slack'],
+    recipients: ['team@example.com'],
+  },
+});
+```
+
+## Best Practices
+
+- Review dashboard regularly
+- Set up alerts for critical metrics
+- Track costs to optimize spending
+- Monitor error trends
+- Use custom dashboards for specific needs
+- Share dashboards with team members
+
+## Next Steps
+
+- **[Telemetry SDK](/docs/observability/telemetry)** - Instrument your agents
+- **[Monitoring Workflows](/docs/observability/monitoring)** - Monitor workflows
+- **[Cost Tracking](/docs/observability/cost-tracking)** - Optimize costs
+
+## Resources
+
+- [Dashboard Guide](https://agentos.dev/dashboard)
+- [Metrics Reference](https://agentos.dev/metrics)
+- [Alert Configuration](https://agentos.dev/alerts)

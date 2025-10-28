@@ -1,0 +1,417 @@
+# Creating Agents
+
+Learn how to create and configure intelligent agents with AgentOS.
+
+## Overview
+
+Agents are the core building blocks of AgentOS. This guide covers everything you need to know about creating, configuring, and managing agents.
+
+## Basic Agent Creation
+
+### Minimal Configuration
+
+Create a simple agent with just a few lines:
+
+```typescript
+import { Agent } from '@agentos/sdk';
+
+const agent = new Agent({
+  name: 'SimpleAgent',
+  model: 'gpt-4',
+});
+
+const response = await agent.run({
+  input: 'Hello, world!',
+});
+```
+
+### With System Prompt
+
+Define your agent's behavior with a system prompt:
+
+```typescript
+const agent = new Agent({
+  name: 'CustomerSupportAgent',
+  model: 'gpt-4',
+  systemPrompt: `You are a friendly customer support agent.
+    - Always be polite and helpful
+    - Provide clear, concise answers
+    - Ask clarifying questions when needed`,
+});
+```
+
+## Configuration Options
+
+### Model Selection
+
+<Card>
+  <CardHeader>
+    <CardTitle>Available Models</CardTitle>
+    <CardDescription>Choose from various LLM providers</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <Tabs defaultValue="openai">
+      <TabsList>
+        <TabsTrigger value="openai">OpenAI</TabsTrigger>
+        <TabsTrigger value="anthropic">Anthropic</TabsTrigger>
+        <TabsTrigger value="opensource">Open Source</TabsTrigger>
+      </TabsList>
+      <TabsContent value="openai">
+        <CodeBlock language="typescript">
+{`model: 'gpt-4'
+model: 'gpt-4-turbo'
+model: 'gpt-3.5-turbo'`}
+        </CodeBlock>
+      </TabsContent>
+      <TabsContent value="anthropic">
+        <CodeBlock language="typescript">
+{`model: 'claude-3-opus'
+model: 'claude-3-sonnet'`}
+        </CodeBlock>
+      </TabsContent>
+      <TabsContent value="opensource">
+        <CodeBlock language="typescript">
+{`model: 'llama-3-70b'
+model: 'mixtral-8x7b'`}
+        </CodeBlock>
+      </TabsContent>
+    </Tabs>
+  </CardContent>
+</Card>
+
+### Temperature and Parameters
+
+Control response randomness and behavior:
+
+```typescript
+const agent = new Agent({
+  name: 'CreativeWriter',
+  model: 'gpt-4',
+  temperature: 0.9,  // Higher = more creative
+  maxTokens: 2000,
+  topP: 0.95,
+  frequencyPenalty: 0.5,
+  presencePenalty: 0.5,
+});
+```
+
+### Memory Configuration
+
+Enable memory for context-aware interactions:
+
+```typescript
+const agent = new Agent({
+  name: 'MemoryAgent',
+  model: 'gpt-4',
+  memory: {
+    enabled: true,
+    shortTerm: {
+      maxMessages: 20,
+      strategy: 'sliding-window',
+    },
+    longTerm: {
+      enabled: true,
+      vectorStore: 'pinecone',
+      embeddingModel: 'text-embedding-3-small',
+    },
+  },
+});
+```
+
+## Advanced Features
+
+### Adding Capabilities
+
+Extend your agent with custom functions:
+
+```typescript
+const agent = new Agent({
+  name: 'DataAgent',
+  model: 'gpt-4',
+});
+
+agent.addCapability({
+  name: 'fetchUserData',
+  description: 'Retrieve user information from the database',
+  parameters: {
+    userId: {
+      type: 'string',
+      description: 'The user ID to fetch',
+      required: true,
+    },
+  },
+  execute: async ({ userId }) => {
+    const user = await database.users.findById(userId);
+    return user;
+  },
+});
+```
+
+### Multiple Capabilities
+
+Add several capabilities at once:
+
+```typescript
+agent.addCapabilities([
+  {
+    name: 'search',
+    description: 'Search the web',
+    execute: async ({ query }) => {
+      return await searchAPI.search(query);
+    },
+  },
+  {
+    name: 'sendEmail',
+    description: 'Send an email',
+    execute: async ({ to, subject, body }) => {
+      return await emailService.send({ to, subject, body });
+    },
+  },
+]);
+```
+
+### Streaming Responses
+
+Stream responses for real-time feedback:
+
+```typescript
+const stream = await agent.stream({
+  input: 'Write a long story about AI',
+});
+
+for await (const chunk of stream) {
+  process.stdout.write(chunk.content);
+}
+```
+
+### Conversation Management
+
+Manage multi-turn conversations:
+
+```typescript
+// Start a conversation
+const conversation = agent.createConversation({
+  userId: 'user-123',
+  metadata: { source: 'web' },
+});
+
+// Add messages
+await conversation.addMessage({
+  role: 'user',
+  content: 'What is AgentOS?',
+});
+
+const response = await conversation.run();
+
+// Continue the conversation
+await conversation.addMessage({
+  role: 'user',
+  content: 'How do I install it?',
+});
+
+const response2 = await conversation.run();
+```
+
+## Agent Lifecycle
+
+### Initialization
+
+```typescript
+// Create agent
+const agent = new Agent(config);
+
+// Initialize (loads memory, connects to services)
+await agent.initialize();
+```
+
+### Running Tasks
+
+```typescript
+// Simple run
+const response = await agent.run({ input: 'Hello' });
+
+// With options
+const response = await agent.run({
+  input: 'Analyze this data',
+  context: { userId: '123' },
+  timeout: 30000,
+  retries: 3,
+});
+```
+
+### Cleanup
+
+```typescript
+// Save state and cleanup
+await agent.shutdown();
+```
+
+## Error Handling
+
+### Basic Error Handling
+
+```typescript
+try {
+  const response = await agent.run({ input: 'Hello' });
+} catch (error) {
+  if (error.code === 'RATE_LIMIT') {
+    console.log('Rate limit exceeded, retrying...');
+  } else if (error.code === 'TIMEOUT') {
+    console.log('Request timed out');
+  } else {
+    console.error('Unexpected error:', error);
+  }
+}
+```
+
+### Retry Logic
+
+```typescript
+const agent = new Agent({
+  name: 'ResilientAgent',
+  model: 'gpt-4',
+  retry: {
+    enabled: true,
+    maxAttempts: 3,
+    backoff: 'exponential',
+    retryableErrors: ['RATE_LIMIT', 'TIMEOUT'],
+  },
+});
+```
+
+## Best Practices
+
+### System Prompt Design
+
+- Be specific about the agent's role and capabilities
+- Include examples of desired behavior
+- Set clear boundaries and limitations
+- Use structured formats when needed
+
+```typescript
+const systemPrompt = `You are a technical support agent for AgentOS.
+
+Role: Help developers troubleshoot issues and answer questions.
+
+Guidelines:
+1. Always ask for error messages and logs
+2. Provide code examples when relevant
+3. Link to documentation for detailed explanations
+4. Escalate complex issues to human support
+
+Response Format:
+- Start with a brief summary
+- Provide step-by-step solutions
+- Include relevant code snippets
+- End with next steps or follow-up questions`;
+```
+
+### Naming Conventions
+
+Use descriptive, consistent names:
+
+```typescript
+// Good
+'CustomerSupportAgent'
+'DataAnalysisAgent'
+'ContentModerationAgent'
+
+// Avoid
+'Agent1'
+'MyAgent'
+'Test'
+```
+
+### Resource Management
+
+```typescript
+// Use try-finally for cleanup
+const agent = new Agent(config);
+try {
+  await agent.initialize();
+  const response = await agent.run({ input: 'Hello' });
+} finally {
+  await agent.shutdown();
+}
+```
+
+### Testing Agents
+
+```typescript
+import { Agent } from '@agentos/sdk';
+import { expect } from 'chai';
+
+describe('CustomerSupportAgent', () => {
+  let agent: Agent;
+
+  beforeEach(async () => {
+    agent = new Agent({
+      name: 'TestAgent',
+      model: 'gpt-4',
+      systemPrompt: 'You are a helpful assistant.',
+    });
+    await agent.initialize();
+  });
+
+  afterEach(async () => {
+    await agent.shutdown();
+  });
+
+  it('should respond to greetings', async () => {
+    const response = await agent.run({ input: 'Hello' });
+    expect(response.output).to.include('hello');
+  });
+});
+```
+
+## Examples
+
+### Chatbot Agent
+
+```typescript
+const chatbot = new Agent({
+  name: 'Chatbot',
+  model: 'gpt-4',
+  systemPrompt: 'You are a friendly chatbot.',
+  memory: { enabled: true },
+  temperature: 0.7,
+});
+```
+
+### Data Analysis Agent
+
+```typescript
+const analyst = new Agent({
+  name: 'DataAnalyst',
+  model: 'gpt-4',
+  systemPrompt: 'You are a data analyst. Analyze data and provide insights.',
+  capabilities: ['executeCode', 'generateCharts'],
+  temperature: 0.3,
+});
+```
+
+### Content Moderation Agent
+
+```typescript
+const moderator = new Agent({
+  name: 'ContentModerator',
+  model: 'gpt-4-turbo',
+  systemPrompt: 'Review content for policy violations.',
+  temperature: 0.1,
+  maxTokens: 500,
+});
+```
+
+## Next Steps
+
+- **[Memory System](/docs/sdk/memory-system)** - Add memory to your agents
+- **[Task Capabilities](/docs/sdk/task-capabilities)** - Extend agent functionality
+- **[API Integration](/docs/sdk/api-integration)** - Connect to external services
+- **[Multi-Agent Systems](/docs/orchestration/multi-agent)** - Coordinate multiple agents
+
+## API Reference
+
+For detailed API documentation, see:
+- [Agent API Reference](/docs/api/agent)
+- [Configuration Options](https://agentos.dev/api/agent-config)
+- [Capability API](https://agentos.dev/api/capabilities)

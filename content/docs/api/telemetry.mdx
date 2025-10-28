@@ -1,0 +1,152 @@
+# Telemetry API
+
+Complete API reference for telemetry and observability in AgentOS.
+
+## Telemetry Class
+
+### init()
+
+Initialize telemetry:
+
+```typescript
+telemetry.init(config: TelemetryConfig): void
+```
+
+**Parameters:**
+```typescript
+{
+  apiKey: string;
+  projectId: string;
+  sampling?: {
+    rate: number;
+    rules?: SamplingRule[];
+  };
+}
+```
+
+### track()
+
+Track custom event:
+
+```typescript
+telemetry.track(event: string, properties?: Record<string, any>): void
+```
+
+**Example:**
+```typescript
+telemetry.track('user_action', {
+  action: 'button_click',
+  userId: 'user-123',
+});
+```
+
+### metric()
+
+Record custom metric:
+
+```typescript
+telemetry.metric(name: string, value: number, tags?: Record<string, string>): void
+```
+
+**Example:**
+```typescript
+telemetry.metric('response_time', 1250, {
+  agent: 'MyAgent',
+  model: 'gpt-4',
+});
+```
+
+### startSpan()
+
+Start a trace span:
+
+```typescript
+telemetry.startSpan(name: string, attributes?: Record<string, any>): Span
+```
+
+**Example:**
+```typescript
+const span = telemetry.startSpan('data_processing');
+try {
+  await processData();
+  span.setStatus('success');
+} finally {
+  span.end();
+}
+```
+
+### withContext()
+
+Execute with context:
+
+```typescript
+telemetry.withContext(context: Record<string, any>, fn: () => Promise<any>): Promise<any>
+```
+
+## Span Class
+
+### setStatus()
+
+Set span status:
+
+```typescript
+span.setStatus(status: 'success' | 'error'): void
+```
+
+### recordException()
+
+Record an exception:
+
+```typescript
+span.recordException(error: Error): void
+```
+
+### setAttribute()
+
+Set span attribute:
+
+```typescript
+span.setAttribute(key: string, value: any): void
+```
+
+### end()
+
+End the span:
+
+```typescript
+span.end(): void
+```
+
+## Types
+
+### TelemetryConfig
+
+```typescript
+interface TelemetryConfig {
+  apiKey: string;
+  projectId: string;
+  sampling?: {
+    rate: number;
+    rules?: SamplingRule[];
+  };
+}
+```
+
+### SamplingRule
+
+```typescript
+interface SamplingRule {
+  condition: string;
+  rate: number;
+}
+```
+
+## Next Steps
+
+- **[Telemetry SDK](/docs/observability/telemetry)** - Telemetry guide
+- **[Dashboard](/docs/observability/dashboard)** - Visualize data
+
+## Resources
+
+- [Full API Documentation](https://agentos.dev/api/telemetry)
+- [TypeScript Definitions](https://github.com/agentos/sdk/blob/main/types/telemetry.d.ts)

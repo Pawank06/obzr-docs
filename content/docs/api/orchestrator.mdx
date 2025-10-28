@@ -1,0 +1,139 @@
+# Orchestrator API
+
+Complete API reference for orchestrating multi-agent systems and workflows.
+
+## Workflow Class
+
+### Constructor
+
+```typescript
+new Workflow(config: WorkflowConfig): Workflow
+```
+
+**Parameters:**
+```typescript
+{
+  nodes: Node[];
+  edges: Edge[];
+  maxIterations?: number;
+}
+```
+
+### execute()
+
+Execute workflow:
+
+```typescript
+workflow.execute(input: WorkflowInput): Promise<WorkflowResult>
+```
+
+**Parameters:**
+```typescript
+{
+  input: any;
+  context?: Record<string, any>;
+  timeout?: number;
+}
+```
+
+**Returns:**
+```typescript
+{
+  output: any;
+  executionId: string;
+  duration: number;
+  nodesExecuted: string[];
+}
+```
+
+## MultiAgentSystem Class
+
+### Constructor
+
+```typescript
+new MultiAgentSystem(config: MultiAgentConfig): MultiAgentSystem
+```
+
+**Parameters:**
+```typescript
+{
+  agents: Agent[];
+  coordinator: 'sequential' | 'parallel' | 'hierarchical';
+  sharedContext?: Record<string, any>;
+}
+```
+
+### run()
+
+Run multi-agent system:
+
+```typescript
+system.run(input: SystemInput): Promise<SystemResult>
+```
+
+## RuntimeManager Class
+
+### start()
+
+Start execution:
+
+```typescript
+runtime.start(agent: Agent, options: RunOptions): Promise<Execution>
+```
+
+### pause()
+
+Pause execution:
+
+```typescript
+runtime.pause(executionId: string): Promise<void>
+```
+
+### resume()
+
+Resume execution:
+
+```typescript
+runtime.resume(executionId: string): Promise<void>
+```
+
+### stop()
+
+Stop execution:
+
+```typescript
+runtime.stop(executionId: string): Promise<void>
+```
+
+## Types
+
+### Node
+
+```typescript
+interface Node {
+  id: string;
+  type: 'agent' | 'function' | 'decision';
+  agent?: Agent;
+  execute?: (input: any) => Promise<any>;
+}
+```
+
+### Edge
+
+```typescript
+interface Edge {
+  from: string;
+  to: string;
+  condition?: (output: any) => boolean;
+}
+```
+
+## Next Steps
+
+- **[Agent API](/docs/api/agent)** - Agent API reference
+- **[Multi-Agent Systems](/docs/orchestration/multi-agent)** - Orchestration guide
+
+## Resources
+
+- [Full API Documentation](https://agentos.dev/api/orchestrator)
+- [TypeScript Definitions](https://github.com/agentos/sdk/blob/main/types/orchestrator.d.ts)

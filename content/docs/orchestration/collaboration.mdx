@@ -1,0 +1,306 @@
+# Agent Collaboration
+
+Enable sophisticated agent-to-agent communication and collaboration patterns for complex problem-solving.
+
+## Overview
+
+Agent collaboration allows multiple agents to work together, share information, negotiate, and coordinate their actions to achieve common goals.
+
+## Collaboration Patterns
+
+### Peer-to-Peer
+
+Agents communicate directly:
+
+```typescript
+import { Agent, Collaboration } from '@agentos/sdk';
+
+const agent1 = new Agent({ name: 'Agent1', model: 'gpt-4' });
+const agent2 = new Agent({ name: 'Agent2', model: 'gpt-4' });
+
+const collaboration = new Collaboration({
+  agents: [agent1, agent2],
+  pattern: 'peer-to-peer',
+});
+
+// Agent1 sends message to Agent2
+await agent1.sendTo('Agent2', {
+  type: 'request',
+  content: 'Can you analyze this data?',
+  data: analysisData,
+});
+```
+
+### Broadcast
+
+One agent communicates with all:
+
+```typescript
+const collaboration = new Collaboration({
+  agents: [agent1, agent2, agent3],
+  pattern: 'broadcast',
+});
+
+// Broadcast to all agents
+await agent1.broadcast({
+  type: 'announcement',
+  content: 'New task available',
+});
+```
+
+### Negotiation
+
+Agents negotiate to reach consensus:
+
+```typescript
+const collaboration = new Collaboration({
+  agents: [agent1, agent2, agent3],
+  pattern: 'negotiation',
+  consensus: {
+    strategy: 'majority',
+    timeout: 30000,
+  },
+});
+
+const decision = await collaboration.negotiate({
+  topic: 'Best approach for task',
+  options: ['option1', 'option2', 'option3'],
+});
+```
+
+## Message Types
+
+### Request-Response
+
+```typescript
+// Agent1 requests
+const response = await agent1.request({
+  to: 'Agent2',
+  action: 'analyze',
+  data: inputData,
+  timeout: 10000,
+});
+
+// Agent2 responds
+agent2.onRequest(async (request) => {
+  const result = await analyze(request.data);
+  return { success: true, result };
+});
+```
+
+### Publish-Subscribe
+
+```typescript
+// Agent subscribes to topic
+agent2.subscribe('data-updates', async (message) => {
+  console.log('Received update:', message.data);
+});
+
+// Agent publishes to topic
+await agent1.publish('data-updates', {
+  type: 'new-data',
+  data: newData,
+});
+```
+
+## Shared State
+
+### Shared Memory
+
+```typescript
+const collaboration = new Collaboration({
+  agents: [agent1, agent2],
+  sharedMemory: {
+    enabled: true,
+    namespace: 'project-123',
+  },
+});
+
+// Agent1 writes to shared memory
+await agent1.memory.shared.set('key', 'value');
+
+// Agent2 reads from shared memory
+const value = await agent2.memory.shared.get('key');
+```
+
+### Shared Context
+
+```typescript
+const sharedContext = {
+  projectId: 'proj-123',
+  goal: 'Complete analysis',
+  constraints: ['budget', 'time'],
+};
+
+const collaboration = new Collaboration({
+  agents: [agent1, agent2],
+  context: sharedContext,
+});
+```
+
+## Coordination Mechanisms
+
+### Task Distribution
+
+```typescript
+const collaboration = new Collaboration({
+  agents: [agent1, agent2, agent3],
+  taskDistribution: {
+    strategy: 'load-balanced',
+    queue: 'priority',
+  },
+});
+
+// Add tasks to queue
+await collaboration.addTask({
+  id: 'task-1',
+  priority: 10,
+  data: taskData,
+});
+```
+
+### Consensus Building
+
+```typescript
+const collaboration = new Collaboration({
+  agents: [agent1, agent2, agent3],
+  consensus: {
+    strategy: 'voting',
+    threshold: 0.66, // 66% agreement required
+  },
+});
+
+const decision = await collaboration.reachConsensus({
+  question: 'Should we proceed with this approach?',
+  options: ['yes', 'no'],
+});
+```
+
+## Advanced Patterns
+
+### Delegation
+
+```typescript
+// Manager delegates to specialist
+await managerAgent.delegate({
+  to: 'SpecialistAgent',
+  task: 'complex-analysis',
+  data: analysisData,
+  deadline: Date.now() + 60000,
+});
+```
+
+### Auction-Based
+
+```typescript
+const collaboration = new Collaboration({
+  agents: [agent1, agent2, agent3],
+  pattern: 'auction',
+});
+
+// Announce task
+const bids = await collaboration.auction({
+  task: 'data-processing',
+  criteria: ['speed', 'cost', 'quality'],
+});
+
+// Select winner
+const winner = selectBestBid(bids);
+```
+
+### Swarm Intelligence
+
+```typescript
+const collaboration = new Collaboration({
+  agents: Array.from({ length: 10 }, (_, i) => 
+    new Agent({ name: `Agent${i}`, model: 'gpt-4' })
+  ),
+  pattern: 'swarm',
+  behavior: {
+    exploration: 0.3,
+    exploitation: 0.7,
+  },
+});
+```
+
+## Conflict Resolution
+
+### Priority-Based
+
+```typescript
+const collaboration = new Collaboration({
+  agents: [agent1, agent2],
+  conflictResolution: {
+    strategy: 'priority',
+    priorities: {
+      'Agent1': 10,
+      'Agent2': 5,
+    },
+  },
+});
+```
+
+### Mediation
+
+```typescript
+const mediatorAgent = new Agent({
+  name: 'Mediator',
+  model: 'gpt-4',
+  systemPrompt: 'You mediate conflicts between agents.',
+});
+
+const collaboration = new Collaboration({
+  agents: [agent1, agent2],
+  mediator: mediatorAgent,
+});
+```
+
+## Monitoring Collaboration
+
+### Interaction Tracking
+
+```typescript
+collaboration.on('message', (event) => {
+  console.log(`${event.from} → ${event.to}: ${event.type}`);
+});
+
+collaboration.on('consensus', (event) => {
+  console.log('Consensus reached:', event.decision);
+});
+```
+
+### Performance Metrics
+
+```typescript
+const metrics = await collaboration.getMetrics();
+
+console.log({
+  messagesExchanged: metrics.messageCount,
+  averageResponseTime: metrics.avgResponseTime,
+  consensusRate: metrics.consensusRate,
+});
+```
+
+## Best Practices
+
+- Define clear communication protocols
+- Implement timeout mechanisms
+- Handle message failures gracefully
+- Monitor agent interactions
+- Use appropriate collaboration patterns
+- Test collaboration scenarios
+- Document agent roles and responsibilities
+- Implement conflict resolution strategies
+
+## Next Steps
+
+- **[Multi-Agent Systems](/docs/orchestration/multi-agent)** - Build multi-agent systems
+- **[Workflow Graphs](/docs/orchestration/workflow-graphs)** - Define workflows
+- **[Observability](/docs/observability/monitoring)** - Monitor collaboration
+- **[Examples](/docs/examples/developer-assistant)** - See collaboration in action
+
+## Resources
+
+- [Collaboration Patterns](https://agentos.dev/collaboration-patterns)
+- [Multi-Agent Communication](https://agentos.dev/agent-communication)
+- [Consensus Algorithms](https://agentos.dev/consensus)

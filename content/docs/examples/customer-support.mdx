@@ -1,0 +1,179 @@
+# AI Customer Support
+
+Build an intelligent customer support system with multi-agent collaboration, ticket routing, and knowledge base integration.
+
+## Overview
+
+This example demonstrates how to build a complete customer support system using AgentOS, featuring automated ticket triage, specialized support agents, and escalation workflows.
+
+## Architecture
+
+```
+Customer Query
+    ↓
+Triage Agent (classify issue)
+    ↓
+├─→ Technical Support Agent
+├─→ Billing Support Agent
+├─→ General Support Agent
+    ↓
+Escalation Agent (if needed)
+    ↓
+Response to Customer
+```
+
+## Implementation
+
+### Triage Agent
+
+```typescript
+import { Agent } from '@agentos/sdk';
+
+const triageAgent = new Agent({
+  name: 'TriageAgent',
+  model: 'gpt-4',
+  systemPrompt: `You classify customer support tickets into categories:
+    - technical: Technical issues, bugs, errors
+    - billing: Payment, subscription, invoicing
+    - general: Questions, feedback, other
+    
+    Respond with JSON: { "category": "technical|billing|general", "priority": "low|medium|high", "summary": "brief summary" }`,
+});
+```
+
+### Specialized Support Agents
+
+```typescript
+const technicalAgent = new Agent({
+  name: 'TechnicalSupport',
+  model: 'gpt-4',
+  systemPrompt: 'You are a technical support specialist. Help users troubleshoot technical issues.',
+  capabilities: [
+    capabilities.searchDocs(),
+    capabilities.checkSystemStatus(),
+  ],
+  memory: { enabled: true },
+});
+
+const billingAgent = new Agent({
+  name: 'BillingSupport',
+  model: 'gpt-4',
+  systemPrompt: 'You are a billing specialist. Help with payment and subscription issues.',
+  capabilities: [
+    capabilities.queryBillingSystem(),
+    capabilities.processRefund(),
+  ],
+});
+```
+
+### Multi-Agent System
+
+```typescript
+import { MultiAgentSystem } from '@agentos/sdk';
+
+const supportSystem = new MultiAgentSystem({
+  agents: [triageAgent, technicalAgent, billingAgent],
+  coordinator: 'conditional',
+});
+
+// Handle customer query
+async function handleSupportTicket(query: string, userId: string) {
+  // Step 1: Triage
+  const triage = await triageAgent.run({ input: query });
+  const classification = JSON.parse(triage.output);
+  
+  // Step 2: Route to specialist
+  let response;
+  switch (classification.category) {
+    case 'technical':
+      response = await technicalAgent.run({
+        input: query,
+        context: { userId, priority: classification.priority },
+      });
+      break;
+    case 'billing':
+      response = await billingAgent.run({
+        input: query,
+        context: { userId, priority: classification.priority },
+      });
+      break;
+    default:
+      response = await generalAgent.run({ input: query });
+  }
+  
+  return {
+    category: classification.category,
+    priority: classification.priority,
+    response: response.output,
+  };
+}
+```
+
+## Features
+
+### Knowledge Base Integration
+
+```typescript
+technicalAgent.addCapability({
+  name: 'searchKnowledgeBase',
+  description: 'Search the knowledge base for solutions',
+  parameters: {
+    query: { type: 'string', required: true },
+  },
+  execute: async ({ query }) => {
+    const results = await knowledgeBase.search(query);
+    return results;
+  },
+});
+```
+
+### Escalation Workflow
+
+```typescript
+const escalationAgent = new Agent({
+  name: 'EscalationAgent',
+  model: 'gpt-4',
+  systemPrompt: 'You handle escalated support cases. Be empathetic and thorough.',
+});
+
+// Escalate if needed
+if (classification.priority === 'high' || !response.resolved) {
+  const escalated = await escalationAgent.run({
+    input: `Escalated ticket: ${query}\nPrevious response: ${response.output}`,
+    context: { userId, ticketId },
+  });
+}
+```
+
+### Conversation Memory
+
+```typescript
+// Agent remembers previous interactions
+const response = await technicalAgent.run({
+  input: 'Is my issue fixed yet?',
+  context: { userId: 'user-123' },
+});
+// Agent recalls previous ticket and provides update
+```
+
+## Best Practices
+
+- Use triage to route efficiently
+- Maintain conversation history
+- Integrate with knowledge bases
+- Implement escalation paths
+- Track resolution metrics
+- Provide human handoff option
+- Monitor agent performance
+
+## Next Steps
+
+- **[Multi-Agent Systems](/docs/orchestration/multi-agent)** - Learn orchestration
+- **[Memory System](/docs/sdk/memory-system)** - Implement memory
+- **[API Integration](/docs/sdk/api-integration)** - Connect systems
+
+## Resources
+
+- [Full Example Code](https://github.com/agentos/examples/tree/main/customer-support)
+- [Live Demo](https://demo.agentos.dev/customer-support)
+- [Video Tutorial](https://agentos.dev/tutorials/customer-support)

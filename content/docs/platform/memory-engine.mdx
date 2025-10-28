@@ -1,0 +1,104 @@
+# Memory Engine
+
+Advanced memory management system with intelligent storage, retrieval, and optimization capabilities.
+
+## Overview
+
+The Memory Engine provides sophisticated memory management beyond basic STM/LTM, including automatic memory consolidation, intelligent forgetting, and cross-agent memory sharing.
+
+## Features
+
+### Automatic Consolidation
+
+Merges related memories:
+
+```typescript
+import { MemoryEngine } from '@agentos/sdk';
+
+const engine = new MemoryEngine({
+  consolidation: {
+    enabled: true,
+    strategy: 'semantic-clustering',
+    interval: 3600000, // Every hour
+  },
+});
+```
+
+### Intelligent Forgetting
+
+Removes low-value memories:
+
+```typescript
+memoryEngine: {
+  forgetting: {
+    enabled: true,
+    criteria: {
+      minImportance: 0.3,
+      maxAge: 90 * 24 * 3600000, // 90 days
+    },
+  },
+}
+```
+
+### Cross-Agent Sharing
+
+Share memories between agents:
+
+```typescript
+const sharedEngine = new MemoryEngine({
+  sharing: {
+    enabled: true,
+    agents: ['Agent1', 'Agent2'],
+    namespace: 'shared-knowledge',
+  },
+});
+```
+
+## Memory Optimization
+
+### Compression
+
+Reduce memory storage:
+
+```typescript
+memoryEngine: {
+  compression: {
+    enabled: true,
+    algorithm: 'summarization',
+    targetReduction: 0.5, // 50% reduction
+  },
+}
+```
+
+### Deduplication
+
+Remove duplicate memories:
+
+```typescript
+memoryEngine: {
+  deduplication: {
+    enabled: true,
+    similarityThreshold: 0.95,
+  },
+}
+```
+
+## Best Practices
+
+- Enable consolidation for long-running agents
+- Implement forgetting policies
+- Monitor memory growth
+- Use compression for large datasets
+- Share knowledge across related agents
+- Regular memory maintenance
+
+## Next Steps
+
+- **[Memory System](/docs/sdk/memory-system)** - Basic memory
+- **[STM & LTM](/docs/sdk/stm-ltm)** - Memory types
+- **[Knowledge Graph](/docs/platform/knowledge-graph)** - Structured knowledge
+
+## Resources
+
+- [Memory Engine Guide](https://agentos.dev/memory-engine)
+- [Optimization Strategies](https://agentos.dev/memory-optimization)

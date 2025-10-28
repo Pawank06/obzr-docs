@@ -1,0 +1,311 @@
+# Core Concepts
+
+Understand the fundamental building blocks of AgentOS and how they work together to create intelligent agent systems.
+
+<InfoCallout title="Learning Path">
+  This guide covers the essential concepts you need to build sophisticated agent systems. Take your time to understand each concept before moving forward.
+</InfoCallout>
+
+## Overview
+
+AgentOS is built around several core concepts that work together to enable sophisticated agent behaviors. Understanding these concepts will help you design and build more effective agent systems.
+
+## Agents
+
+<Card>
+  <CardHeader>
+    <CardTitle>What is an Agent?</CardTitle>
+    <CardDescription>
+      An Agent is the primary building block in AgentOS, representing an autonomous entity with specific capabilities.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <FeatureGrid>
+      <FeatureCard 
+        title="Input Processing" 
+        description="Process inputs and generate intelligent outputs"
+      />
+      <FeatureCard 
+        title="Memory Management" 
+        description="Maintain context across interactions"
+      />
+      <FeatureCard 
+        title="Task Execution" 
+        description="Execute complex tasks and workflows"
+      />
+      <FeatureCard 
+        title="Collaboration" 
+        description="Work together with other agents"
+      />
+    </FeatureGrid>
+  </CardContent>
+</Card>
+
+### Agent Anatomy
+
+<CodeBlock language="typescript" filename="agent-example.ts">
+{`const agent = new Agent({
+  name: 'CustomerSupportAgent',
+  model: 'gpt-4',
+  systemPrompt: 'You are a helpful customer support agent.',
+  memory: { enabled: true },
+  capabilities: ['search', 'email'],
+});`}
+</CodeBlock>
+
+<PropertyTable properties={[
+  { name: 'name', type: 'string', required: true, description: 'Unique identifier for the agent' },
+  { name: 'model', type: 'string', required: true, description: 'The underlying LLM (e.g., GPT-4, Claude)' },
+  { name: 'systemPrompt', type: 'string', description: 'Instructions defining the agent\'s behavior' },
+  { name: 'memory', type: 'MemoryConfig', description: 'Configuration for remembering context' },
+  { name: 'capabilities', type: 'string[]', description: 'Tools and functions the agent can use' },
+]} />
+
+## Memory System
+
+Memory enables agents to maintain context and learn from past interactions.
+
+### Short-Term Memory (STM)
+
+Temporary storage for the current conversation or session:
+
+- Stores recent messages and context
+- Cleared when the session ends
+- Fast access for immediate context
+- Limited capacity (typically last N messages)
+
+### Long-Term Memory (LTM)
+
+Persistent storage for knowledge and experiences:
+
+- Survives across sessions
+- Stores important facts and learnings
+- Searchable and retrievable
+- Unlimited capacity with vector embeddings
+
+```typescript
+// Agent with both STM and LTM
+const agent = new Agent({
+  memory: {
+    shortTerm: {
+      enabled: true,
+      maxMessages: 10,
+    },
+    longTerm: {
+      enabled: true,
+      vectorStore: 'pinecone',
+    },
+  },
+});
+```
+
+## Tasks and Capabilities
+
+Tasks represent discrete units of work that agents can perform.
+
+### Built-in Capabilities
+
+AgentOS provides common capabilities out of the box:
+
+- **Search**: Web and knowledge base search
+- **Code Execution**: Run code in sandboxed environments
+- **API Calls**: Interact with external services
+- **File Operations**: Read and write files
+- **Data Processing**: Transform and analyze data
+
+### Custom Capabilities
+
+Define your own capabilities:
+
+```typescript
+agent.addCapability({
+  name: 'sendEmail',
+  description: 'Send an email to a user',
+  parameters: {
+    to: 'string',
+    subject: 'string',
+    body: 'string',
+  },
+  execute: async (params) => {
+    // Your email sending logic
+    return { success: true };
+  },
+});
+```
+
+## Orchestration
+
+Orchestration coordinates multiple agents working together on complex tasks.
+
+### Workflow Graphs
+
+Define how agents collaborate:
+
+```typescript
+const workflow = new Workflow({
+  nodes: [
+    { id: 'research', agent: researchAgent },
+    { id: 'write', agent: writerAgent },
+    { id: 'review', agent: reviewAgent },
+  ],
+  edges: [
+    { from: 'research', to: 'write' },
+    { from: 'write', to: 'review' },
+  ],
+});
+```
+
+### Execution Patterns
+
+- **Sequential**: Agents execute one after another
+- **Parallel**: Multiple agents work simultaneously
+- **Conditional**: Routing based on outputs
+- **Loop**: Iterative refinement
+
+## Context and State
+
+Context represents the current state of an agent's execution.
+
+### Context Components
+
+- **Input**: The current request or message
+- **History**: Previous interactions
+- **Variables**: Shared state across the workflow
+- **Metadata**: Additional information (user ID, timestamp, etc.)
+
+```typescript
+const context = {
+  input: 'Help me write a blog post',
+  variables: {
+    userId: '123',
+    topic: 'AI agents',
+  },
+  metadata: {
+    timestamp: Date.now(),
+    source: 'web',
+  },
+};
+```
+
+## Observability
+
+Monitor and understand agent behavior in production.
+
+### Key Metrics
+
+- **Latency**: Response time for agent operations
+- **Token Usage**: LLM token consumption
+- **Cost**: Financial cost per operation
+- **Success Rate**: Percentage of successful completions
+- **Error Rate**: Frequency of failures
+
+### Telemetry
+
+```typescript
+import { telemetry } from '@agentos/sdk';
+
+// Automatic tracking
+telemetry.track(agent, {
+  metrics: ['latency', 'tokens', 'cost'],
+  events: ['start', 'complete', 'error'],
+});
+```
+
+## Platform Intelligence
+
+Advanced features that enhance agent capabilities.
+
+### Context Intelligence
+
+Automatically determines relevant context for each interaction:
+
+- Analyzes input to identify key entities
+- Retrieves relevant historical information
+- Prioritizes important context
+- Reduces token usage
+
+### Cognitive Routing
+
+Routes requests to the most appropriate agent or model:
+
+- Analyzes task complexity
+- Matches capabilities to requirements
+- Optimizes for cost and performance
+- Handles fallbacks and retries
+
+### Knowledge Graph
+
+Structured representation of agent knowledge:
+
+- Entities and relationships
+- Semantic search capabilities
+- Automatic knowledge extraction
+- Cross-agent knowledge sharing
+
+## Data Flow
+
+Understanding how data flows through AgentOS:
+
+1. **Input** → Agent receives a request
+2. **Context Loading** → Relevant memory and context retrieved
+3. **Processing** → Agent processes with LLM and capabilities
+4. **Memory Update** → New information stored
+5. **Output** → Response returned to caller
+6. **Telemetry** → Metrics and events recorded
+
+```
+┌─────────┐     ┌─────────┐     ┌─────────┐     ┌─────────┐
+│  Input  │ ──→ │ Context │ ──→ │  Agent  │ ──→ │ Output  │
+└─────────┘     └─────────┘     └─────────┘     └─────────┘
+                     ↑                │
+                     │                ↓
+                ┌─────────┐     ┌─────────┐
+                │ Memory  │     │Telemetry│
+                └─────────┘     └─────────┘
+```
+
+## Best Practices
+
+### Agent Design
+
+- Keep system prompts clear and specific
+- Enable memory for conversational agents
+- Limit capabilities to what's necessary
+- Use descriptive names and metadata
+
+### Memory Management
+
+- Use STM for conversation context
+- Use LTM for facts and knowledge
+- Implement memory cleanup strategies
+- Monitor memory usage and costs
+
+### Orchestration
+
+- Break complex tasks into smaller steps
+- Use parallel execution when possible
+- Implement error handling and retries
+- Monitor workflow performance
+
+### Observability
+
+- Track key metrics from day one
+- Set up alerts for errors and anomalies
+- Review telemetry data regularly
+- Optimize based on real usage patterns
+
+## Next Steps
+
+Now that you understand the core concepts:
+
+- **[Creating Agents](/docs/sdk/creating-agents)** - Build your first agent
+- **[Memory System](/docs/sdk/memory-system)** - Deep dive into memory
+- **[Multi-Agent Systems](/docs/orchestration/multi-agent)** - Orchestrate multiple agents
+- **[Examples](/docs/examples/customer-support)** - See concepts in action
+
+## Further Reading
+
+- [Agent API Reference](/docs/api/agent)
+- [Memory API Reference](/docs/api/memory)
+- [Orchestrator API Reference](/docs/api/orchestrator)
+- [Best Practices Guide](https://agentos.dev/best-practices)

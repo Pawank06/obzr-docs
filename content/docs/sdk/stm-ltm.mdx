@@ -1,0 +1,476 @@
+# STM & LTM
+
+Master short-term and long-term memory to build agents with sophisticated context awareness and knowledge retention.
+
+## Overview
+
+AgentOS provides two complementary memory systems: Short-Term Memory (STM) for immediate context and Long-Term Memory (LTM) for persistent knowledge. Understanding when and how to use each is key to building effective agents.
+
+## Short-Term Memory (STM)
+
+STM stores recent conversation context and temporary state.
+
+### Characteristics
+
+- **Volatile**: Cleared when session ends
+- **Fast**: Immediate access without database queries
+- **Limited**: Constrained by token limits or message count
+- **Sequential**: Maintains conversation order
+
+### Configuration
+
+```typescript
+const agent = new Agent({
+  memory: {
+    shortTerm: {
+      enabled: true,
+      maxMessages: 10,
+      strategy: 'sliding-window',
+      includeSystemMessages: true,
+    },
+  },
+});
+```
+
+### Strategies
+
+**Sliding Window**
+```typescript
+shortTerm: {
+  strategy: 'sliding-window',
+  maxMessages: 10, // Keep last 10 messages
+}
+```
+
+**Token-Based**
+```typescript
+shortTerm: {
+  strategy: 'token-based',
+  maxTokens: 4000, // Stay within token limit
+}
+```
+
+**Summarization**
+```typescript
+shortTerm: {
+  strategy: 'summarization',
+  maxMessages: 20,
+  summarizeAfter: 10, // Summarize when exceeding 10
+  summaryModel: 'gpt-3.5-turbo',
+}
+```
+
+### Use Cases
+
+- Maintaining conversation flow
+- Tracking current task progress
+- Temporary calculations or state
+- Recent user inputs
+
+## Long-Term Memory (LTM)
+
+LTM provides persistent storage with semantic search capabilities.
+
+### Characteristics
+
+- **Persistent**: Survives across sessions
+- **Searchable**: Vector-based semantic retrieval
+- **Scalable**: Unlimited storage capacity
+- **Structured**: Rich metadata and filtering
+
+### Configuration
+
+```typescript
+const agent = new Agent({
+  memory: {
+    longTerm: {
+      enabled: true,
+      vectorStore: 'pinecone',
+      embeddingModel: 'text-embedding-3-small',
+      namespace: 'user-knowledge',
+      dimensions: 1536,
+    },
+  },
+});
+```
+
+### Storage Options
+
+**Pinecone**
+```typescript
+longTerm: {
+  vectorStore: 'pinecone',
+  vectorStoreConfig: {
+    apiKey: process.env.PINECONE_API_KEY,
+    environment: 'us-west1-gcp',
+    index: 'agent-memory',
+  },
+}
+```
+
+**Weaviate**
+```typescript
+longTerm: {
+  vectorStore: 'weaviate',
+  vectorStoreConfig: {
+    url: 'http://localhost:8080',
+    className: 'AgentMemory',
+  },
+}
+```
+
+**Qdrant**
+```typescript
+longTerm: {
+  vectorStore: 'qdrant',
+  vectorStoreConfig: {
+    url: 'http://localhost:6333',
+    collection: 'agent-memory',
+  },
+}
+```
+
+### Use Cases
+
+- User preferences and profiles
+- Historical interactions
+- Knowledge bases
+- Learned facts and patterns
+
+## Combining STM and LTM
+
+The real power comes from using both together.
+
+### Hybrid Configuration
+
+```typescript
+const agent = new Agent({
+  memory: {
+    shortTerm: {
+      enabled: true,
+      maxMessages: 10,
+      strategy: 'sliding-window',
+    },
+    longTerm: {
+      enabled: true,
+      vectorStore: 'pinecone',
+      autoStore: true, // Automatically save important info
+      relevanceThreshold: 0.7,
+    },
+  },
+});
+```
+
+### Automatic Promotion
+
+Move important information from STM to LTM:
+
+```typescript
+memory: {
+  autoPromote: {
+    enabled: true,
+    criteria: {
+      importance: 0.8, // Importance score threshold
+      keywords: ['preference', 'remember', 'always'],
+    },
+  },
+}
+```
+
+### Context Assembly
+
+AgentOS automatically combines STM and LTM:
+
+```typescript
+// User asks a question
+await agent.run({ input: 'What did I tell you about my preferences?' });
+
+// AgentOS:
+// 1. Checks STM for recent mentions
+// 2. Searches LTM for relevant memories
+// 3. Combines both for complete context
+// 4. Generates response
+```
+
+## Memory Lifecycle
+
+### Storage Flow
+
+```
+User Input
+    ↓
+STM (immediate context)
+    ↓
+Importance Analysis
+    ↓
+LTM (if important)
+    ↓
+Vector Embedding
+    ↓
+Persistent Storage
+```
+
+### Retrieval Flow
+
+```
+User Query
+    ↓
+STM Check (recent context)
+    ↓
+LTM Search (semantic match)
+    ↓
+Relevance Ranking
+    ↓
+Context Assembly
+    ↓
+Agent Response
+```
+
+## Advanced Patterns
+
+### Selective Storage
+
+Control what gets stored in LTM:
+
+```typescript
+await agent.run({
+  input: 'My API key is abc123',
+  memory: {
+    storeInLTM: false, // Don't persist sensitive data
+  },
+});
+```
+
+### Memory Tagging
+
+Tag memories for organization:
+
+```typescript
+await agent.memory.store({
+  content: 'User prefers dark mode',
+  metadata: {
+    type: 'preference',
+    category: 'ui',
+    tags: ['settings', 'display'],
+  },
+  storeIn: 'longTerm',
+});
+```
+
+### Contextual Retrieval
+
+Retrieve memories based on context:
+
+```typescript
+const relevantMemories = await agent.memory.retrieve({
+  context: 'user interface preferences',
+  sources: ['shortTerm', 'longTerm'],
+  limit: 5,
+  minRelevance: 0.7,
+});
+```
+
+## Performance Considerations
+
+### STM Performance
+
+- **Fast**: In-memory access
+- **Low cost**: No database queries
+- **Limited**: Constrained by token limits
+
+```typescript
+// Optimize STM size
+shortTerm: {
+  maxMessages: 10, // Smaller = faster
+  strategy: 'token-based',
+  maxTokens: 2000, // Control costs
+}
+```
+
+### LTM Performance
+
+- **Slower**: Requires vector search
+- **Higher cost**: Database and embedding costs
+- **Scalable**: Handles large datasets
+
+```typescript
+// Optimize LTM queries
+longTerm: {
+  cache: {
+    enabled: true,
+    ttl: 300, // Cache for 5 minutes
+  },
+  batchSize: 100, // Batch operations
+}
+```
+
+## Memory Strategies by Use Case
+
+### Chatbot
+
+```typescript
+memory: {
+  shortTerm: {
+    enabled: true,
+    maxMessages: 15,
+    strategy: 'sliding-window',
+  },
+  longTerm: {
+    enabled: true,
+    autoStore: true,
+    relevanceThreshold: 0.8,
+  },
+}
+```
+
+### Customer Support
+
+```typescript
+memory: {
+  shortTerm: {
+    enabled: true,
+    maxMessages: 20,
+    strategy: 'summarization',
+  },
+  longTerm: {
+    enabled: true,
+    namespace: 'support-tickets',
+    metadata: { type: 'support' },
+  },
+}
+```
+
+### Knowledge Assistant
+
+```typescript
+memory: {
+  shortTerm: {
+    enabled: true,
+    maxMessages: 5,
+    strategy: 'token-based',
+  },
+  longTerm: {
+    enabled: true,
+    vectorStore: 'weaviate',
+    embeddingModel: 'text-embedding-3-large',
+  },
+}
+```
+
+## Best Practices
+
+### STM Best Practices
+
+- Keep STM small for faster processing
+- Use summarization for long conversations
+- Clear STM between distinct tasks
+- Include only relevant context
+
+### LTM Best Practices
+
+- Store only important information
+- Use rich metadata for filtering
+- Implement regular cleanup
+- Monitor storage costs
+- Use namespaces for organization
+
+### Security
+
+```typescript
+// Don't store sensitive data in LTM
+const sensitivePatterns = ['password', 'api key', 'secret'];
+
+memory: {
+  longTerm: {
+    filter: {
+      exclude: sensitivePatterns,
+    },
+  },
+}
+```
+
+## Monitoring
+
+### Memory Metrics
+
+```typescript
+// Get memory statistics
+const stats = await agent.memory.getStats();
+
+console.log({
+  stm: {
+    messages: stats.shortTerm.messageCount,
+    tokens: stats.shortTerm.tokenCount,
+  },
+  ltm: {
+    memories: stats.longTerm.memoryCount,
+    size: stats.longTerm.storageSize,
+  },
+});
+```
+
+### Cost Tracking
+
+```typescript
+// Monitor memory costs
+const costs = await agent.memory.getCosts();
+
+console.log({
+  embeddings: costs.embeddings,
+  storage: costs.storage,
+  queries: costs.queries,
+  total: costs.total,
+});
+```
+
+## Troubleshooting
+
+### STM Issues
+
+**Context too large**
+```typescript
+// Reduce STM size
+shortTerm: {
+  maxTokens: 2000,
+  strategy: 'summarization',
+}
+```
+
+**Missing recent context**
+```typescript
+// Increase STM capacity
+shortTerm: {
+  maxMessages: 20,
+}
+```
+
+### LTM Issues
+
+**Slow retrieval**
+```typescript
+// Enable caching
+longTerm: {
+  cache: { enabled: true },
+}
+```
+
+**Irrelevant results**
+```typescript
+// Adjust relevance threshold
+longTerm: {
+  relevanceThreshold: 0.8, // Higher = more relevant
+}
+```
+
+## Next Steps
+
+- **[Persistence Layer](/docs/sdk/persistence)** - Configure storage backends
+- **[Memory API](/docs/api/memory)** - Complete API reference
+- **[Knowledge Graph](/docs/platform/knowledge-graph)** - Advanced memory structures
+- **[Examples](/docs/examples/knowledge-systems)** - Real-world implementations
+
+## Resources
+
+- [Memory Architecture Guide](https://agentos.dev/memory-architecture)
+- [Vector Store Comparison](https://agentos.dev/vector-stores)
+- [Memory Optimization Tips](https://agentos.dev/memory-optimization)

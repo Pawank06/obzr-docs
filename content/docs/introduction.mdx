@@ -1,0 +1,506 @@
+# Introduction
+
+Welcome to AgentOS, a comprehensive AI agent platform that combines advanced memory, intelligent orchestration, real-time observability, and cognitive intelligence to build production-ready AI systems.
+
+## Overview
+
+AgentOS is a production-grade AI agent platform designed to solve the complexities of building, deploying, and managing intelligent AI systems at scale. It provides four core pillars that work together seamlessly:
+
+- **Advanced Memory System**: Dual-layer STM/LTM architecture for contextual awareness
+- **Multi-Agent Orchestration**: Coordinate multiple agents with workflow graphs and runtime management
+- **Real-Time Observability**: Monitor, track, and optimize agent performance with comprehensive telemetry
+- **Platform Intelligence**: Cognitive routing, context intelligence, and knowledge graphs for smarter decisions
+
+<InfoCallout title="What You'll Build">
+  With AgentOS, you can create sophisticated AI systems that remember context,
+  coordinate multiple agents, monitor performance in real-time, and make
+  intelligent routing decisions - all while maintaining production-grade
+  reliability and scalability.
+</InfoCallout>
+
+<FeatureGrid>
+  <FeatureCard
+    title="Advanced Memory System"
+    description="Dual-layer STM/LTM architecture with intelligent memory promotion and consolidation"
+  />
+  <FeatureCard
+    title="Multi-Agent Orchestration"
+    description="Coordinate multiple agents with workflow graphs and runtime management"
+  />
+  <FeatureCard
+    title="Real-Time Observability"
+    description="Comprehensive telemetry, monitoring, and cost tracking for all agent operations"
+  />
+  <FeatureCard
+    title="Cognitive Routing"
+    description="Intelligent request routing based on context, capability, and performance"
+  />
+  <FeatureCard
+    title="Knowledge Graph"
+    description="Build and query interconnected knowledge structures for complex reasoning"
+  />
+  <FeatureCard
+    title="Production Ready"
+    description="Enterprise security, high performance, and multi-LLM support out of the box"
+  />
+</FeatureGrid>
+
+## Why AgentOS?
+
+Building production-ready AI systems requires more than just connecting to an LLM. AgentOS provides a complete platform that addresses the full lifecycle of AI agent development:
+
+### 1. Intelligent Memory Management
+
+AgentOS's memory system mimics human memory with a dual-layer architecture:
+
+- **Short-Term Memory (STM)**: Redis-based storage with TTL for recent interactions (< 10ms access time)
+- **Long-Term Memory (LTM)**: PostgreSQL + ChromaDB for persistent, searchable memories
+- **Importance Scoring**: 6-factor algorithm determines memory priority and automatic promotion
+- **Memory Consolidation**: Reduces redundancy by clustering similar memories and creating summaries
+- **Hybrid Retrieval**: Combines semantic search with keyword matching for optimal recall
+
+### 2. Multi-Agent Orchestration
+
+Coordinate complex workflows with multiple specialized agents:
+
+- **Workflow Graphs**: Define agent interactions with DAG-based workflows
+- **Runtime Manager**: Dynamic agent lifecycle management and resource allocation
+- **Agent Collaboration**: Built-in communication protocols for agent-to-agent interaction
+- **Task Distribution**: Intelligent workload distribution across agent pools
+- **Failure Recovery**: Automatic retry logic and graceful degradation
+
+### 3. Real-Time Observability
+
+Monitor and optimize your AI systems with comprehensive telemetry:
+
+- **Dashboard Overview**: Real-time metrics for agent performance, latency, and success rates
+- **Telemetry SDK**: Instrument your agents with custom metrics and traces
+- **Cost Tracking**: Monitor token usage and API costs across all LLM providers
+- **Workflow Monitoring**: Track execution paths, bottlenecks, and failure points
+- **Audit Logs**: Complete history of agent actions and decisions
+
+### 4. Platform Intelligence
+
+Make your agents smarter with cognitive capabilities:
+
+- **Context Intelligence**: Automatically extract and maintain relevant context across interactions
+- **Cognitive Routing**: Route requests to the most appropriate agent based on capability and performance
+- **Knowledge Graph**: Build interconnected knowledge structures for complex reasoning
+- **Memory Engine**: Advanced memory retrieval with semantic understanding and relevance scoring
+
+### Built for Developers
+
+AgentOS is designed with developer experience in mind:
+
+- **RESTful API**: Complete HTTP API for all platform operations
+- **TypeScript SDK**: Type-safe SDK with full IntelliSense support
+- **Clear Documentation**: Comprehensive guides with working examples
+- **Error Handling**: Graceful degradation and detailed error messages
+- **Local Development**: Run the entire platform locally with Docker Compose
+
+### Production-Grade Features
+
+Deploy with confidence using enterprise-ready capabilities:
+
+- Sub-second response times for critical operations
+- Horizontal scaling support for high-traffic applications
+- Built-in monitoring and health checks
+- Comprehensive audit trails and security controls
+- Multi-LLM support (OpenAI, Anthropic, and more)
+
+## Core Capabilities
+
+### Memory Operations
+
+Store, query, and manage memories with intelligent retrieval:
+
+<Tabs defaultValue="typescript">
+  <TabsList>
+    <TabsTrigger value="typescript">TypeScript</TabsTrigger>
+    <TabsTrigger value="curl">cURL</TabsTrigger>
+  </TabsList>
+  <TabsContent value="typescript">
+    <CodeBlock language="typescript">
+      {`import { AgentOS } from '@agentos/sdk';
+
+const client = new AgentOS({
+apiKey: process.env.AGENTOS_API_KEY
+});
+
+// Store a memory
+const memory = await client.memory.store({
+content: "User prefers concise technical explanations",
+type: "semantic",
+tags: ["preference", "communication"]
+});
+
+console.log('Memory stored:', memory.id);`}
+</CodeBlock>
+
+  </TabsContent>
+  <TabsContent value="curl">
+    <CodeBlock language="bash">
+      {`# Store a memory
+curl -X POST http://localhost:3001/api/memory/store \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer <token>" \\
+  -d '{
+    "content": "User prefers concise technical explanations",
+    "type": "semantic",
+    "tags": ["preference", "communication"]
+  }'`}
+    </CodeBlock>
+  </TabsContent>
+</Tabs>
+
+### Multi-Agent Workflows
+
+Orchestrate complex agent interactions with workflow graphs:
+
+<Tabs defaultValue="typescript">
+  <TabsList>
+    <TabsTrigger value="typescript">TypeScript</TabsTrigger>
+    <TabsTrigger value="curl">cURL</TabsTrigger>
+  </TabsList>
+  <TabsContent value="typescript">
+    <CodeBlock language="typescript">
+      {`import { AgentOS } from '@agentos/sdk';
+
+const client = new AgentOS({
+apiKey: process.env.AGENTOS_API_KEY
+});
+
+// Create a workflow
+const workflow = await client.orchestration.createWorkflow({
+name: "customer-support-workflow",
+agents: [
+{ id: "classifier", type: "intent-classifier" },
+{ id: "responder", type: "response-generator" }
+],
+edges: [
+{ from: "classifier", to: "responder" }
+]
+});
+
+console.log('Workflow created:', workflow.id);`}
+</CodeBlock>
+
+  </TabsContent>
+  <TabsContent value="curl">
+    <CodeBlock language="bash">
+      {`# Create a workflow
+curl -X POST http://localhost:3001/api/orchestration/workflows \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer <token>" \\
+  -d '{
+    "name": "customer-support-workflow",
+    "agents": [
+      {"id": "classifier", "type": "intent-classifier"},
+      {"id": "responder", "type": "response-generator"}
+    ],
+    "edges": [
+      {"from": "classifier", "to": "responder"}
+    ]
+  }'`}
+    </CodeBlock>
+  </TabsContent>
+</Tabs>
+
+### Real-Time Monitoring
+
+Track agent performance and costs with comprehensive telemetry:
+
+<Tabs defaultValue="typescript">
+  <TabsList>
+    <TabsTrigger value="typescript">TypeScript</TabsTrigger>
+    <TabsTrigger value="curl">cURL</TabsTrigger>
+  </TabsList>
+  <TabsContent value="typescript">
+    <CodeBlock language="typescript">
+      {`import { AgentOS } from '@agentos/sdk';
+
+const client = new AgentOS({
+apiKey: process.env.AGENTOS_API_KEY
+});
+
+// Get agent metrics
+const metrics = await client.observability.getMetrics({
+agentId: "customer-support-agent",
+timeRange: "24h",
+metrics: ["latency", "success_rate", "token_usage"]
+});
+
+console.log('Agent metrics:', metrics);`}
+</CodeBlock>
+
+  </TabsContent>
+  <TabsContent value="curl">
+    <CodeBlock language="bash">
+      {`# Get agent metrics
+curl -X GET http://localhost:3001/api/observability/metrics \\
+  -H "Authorization: Bearer <token>" \\
+  -d '{
+    "agentId": "customer-support-agent",
+    "timeRange": "24h",
+    "metrics": ["latency", "success_rate", "token_usage"]
+  }'`}
+    </CodeBlock>
+  </TabsContent>
+</Tabs>
+
+### Cognitive Routing
+
+Route requests intelligently based on context and capability:
+
+<Tabs defaultValue="typescript">
+  <TabsList>
+    <TabsTrigger value="typescript">TypeScript</TabsTrigger>
+    <TabsTrigger value="curl">cURL</TabsTrigger>
+  </TabsList>
+  <TabsContent value="typescript">
+    <CodeBlock language="typescript">
+      {`import { AgentOS } from '@agentos/sdk';
+
+const client = new AgentOS({
+apiKey: process.env.AGENTOS_API_KEY
+});
+
+// Route a request
+const route = await client.platform.route({
+query: "Help me debug this Python error",
+context: {
+language: "python",
+skill_level: "intermediate"
+},
+routingStrategy: "capability-based"
+});
+
+console.log('Routed to agent:', route.agentId);`}
+</CodeBlock>
+
+  </TabsContent>
+  <TabsContent value="curl">
+    <CodeBlock language="bash">
+      {`# Route a request
+curl -X POST http://localhost:3001/api/platform/route \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer <token>" \\
+  -d '{
+    "query": "Help me debug this Python error",
+    "context": {"language": "python", "skill_level": "intermediate"},
+    "routingStrategy": "capability-based"
+  }'`}
+    </CodeBlock>
+  </TabsContent>
+</Tabs>
+
+<SectionDivider />
+
+## System Architecture
+
+<Card>
+  <CardHeader>
+    <CardTitle>High-Level Architecture</CardTitle>
+    <CardDescription>
+      AgentOS's modular architecture ensures scalability and maintainability
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <CodeBlock language="text">
+      {`┌─────────────────────────────────────────────────────────────┐
+│                        Client Layer                         │
+│  • React Dashboard  • SDK Integration  • API Clients        │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      API Gateway Layer                      │
+│  • Authentication  • Rate Limiting  • Request Validation    │
+└─────────────────────────────────────────────────────────────┘
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        ▼                     ▼                     ▼
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│   Memory     │    │Orchestration │    │ Observability│
+│   System     │    │   Engine     │    │   Platform   │
+│              │    │              │    │              │
+│ • STM/LTM    │    │ • Workflows  │    │ • Telemetry  │
+│ • Hybrid     │    │ • Runtime    │    │ • Metrics    │
+│   Search     │    │ • Agent Pool │    │ • Cost Track │
+│ • Promotion  │    │ • Collab     │    │ • Dashboards │
+└──────────────┘    └──────────────┘    └──────────────┘
+        │                     │                     │
+        └─────────────────────┼─────────────────────┘
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  Platform Intelligence                      │
+│  • Context Intelligence  • Cognitive Routing  • Knowledge   │
+└─────────────────────────────────────────────────────────────┘
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        ▼                     ▼                     ▼
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│ AI Services  │    │  Security    │    │ Data Stores  │
+│              │    │              │    │              │
+│ • OpenAI     │    │ • Encryption │    │ • PostgreSQL │
+│ • Anthropic  │    │ • Audit Log  │    │ • Redis      │
+│ • Streaming  │    │ • Access Ctl │    │ • ChromaDB   │
+└──────────────┘    └──────────────┘    └──────────────┘`}
+    </CodeBlock>
+  </CardContent>
+</Card>
+
+<SectionDivider />
+
+## Use Cases
+
+AgentOS powers a wide range of intelligent applications across industries:
+
+<FeatureGrid>
+  <FeatureCard
+    title="Multi-Agent Customer Support"
+    description="Orchestrate specialized agents for routing, resolution, and escalation with full observability"
+  />
+  <FeatureCard
+    title="Intelligent Code Assistants"
+    description="Coordinate review, testing, and documentation agents with context-aware routing"
+  />
+  <FeatureCard
+    title="Learning Platforms"
+    description="Adaptive educational systems that remember progress and route to specialized tutors"
+  />
+  <FeatureCard
+    title="Enterprise Knowledge Systems"
+    description="Build knowledge graphs, route queries intelligently, and track usage patterns"
+  />
+  <FeatureCard
+    title="AI-Powered Workflows"
+    description="Automate complex business processes with monitored multi-agent workflows"
+  />
+  <FeatureCard
+    title="Research Assistants"
+    description="Coordinate data gathering, analysis, and synthesis agents with memory persistence"
+  />
+</FeatureGrid>
+
+## Getting Started
+
+Ready to build your first intelligent AI system? Here's your learning path:
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+  <Card>
+    <CardHeader>
+      <CardTitle>1. Quickstart</CardTitle>
+      <CardDescription>Get AgentOS running in 10 minutes</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm">Install dependencies, configure environment, and create your first agent.</p>
+      <a href="/docs/quickstart" className="text-sm font-medium text-primary hover:underline mt-2 inline-block">
+        Start here →
+      </a>
+    </CardContent>
+  </Card>
+
+{" "}
+
+<Card>
+  <CardHeader>
+    <CardTitle>2. Core Concepts</CardTitle>
+    <CardDescription>Understand the platform architecture</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p className="text-sm">
+      Learn about memory, orchestration, observability, and platform
+      intelligence.
+    </p>
+    <a
+      href="/docs/core-concepts"
+      className="text-sm font-medium text-primary hover:underline mt-2 inline-block"
+    >
+      Learn concepts →
+    </a>
+  </CardContent>
+</Card>
+
+{" "}
+
+<Card>
+  <CardHeader>
+    <CardTitle>3. Memory System</CardTitle>
+    <CardDescription>Build agents with contextual memory</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p className="text-sm">
+      Explore STM/LTM, memory types, and intelligent retrieval strategies.
+    </p>
+    <a
+      href="/docs/sdk/memory-system"
+      className="text-sm font-medium text-primary hover:underline mt-2 inline-block"
+    >
+      Explore memory →
+    </a>
+  </CardContent>
+</Card>
+
+{" "}
+
+<Card>
+  <CardHeader>
+    <CardTitle>4. Multi-Agent Orchestration</CardTitle>
+    <CardDescription>Coordinate complex workflows</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p className="text-sm">
+      Create workflow graphs, manage agent lifecycles, and enable collaboration.
+    </p>
+    <a
+      href="/docs/orchestration/multi-agent"
+      className="text-sm font-medium text-primary hover:underline mt-2 inline-block"
+    >
+      Build workflows →
+    </a>
+  </CardContent>
+</Card>
+
+{" "}
+
+<Card>
+  <CardHeader>
+    <CardTitle>5. Observability</CardTitle>
+    <CardDescription>Monitor and optimize performance</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p className="text-sm">
+      Track metrics, monitor costs, and gain insights into agent behavior.
+    </p>
+    <a
+      href="/docs/observability/dashboard"
+      className="text-sm font-medium text-primary hover:underline mt-2 inline-block"
+    >
+      Setup monitoring →
+    </a>
+  </CardContent>
+</Card>
+
+  <Card>
+    <CardHeader>
+      <CardTitle>6. Platform Intelligence</CardTitle>
+      <CardDescription>Add cognitive capabilities</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm">Implement context intelligence, cognitive routing, and knowledge graphs.</p>
+      <a href="/docs/platform/context-intelligence" className="text-sm font-medium text-primary hover:underline mt-2 inline-block">
+        Explore intelligence →
+      </a>
+    </CardContent>
+  </Card>
+</div>
+
+## Community and Support
+
+Join our growing community of developers building with AgentOS:
+
+- [GitHub Repository](https://github.com/AgentOS) - Contribute and report issues
+- [Discord Community](https://discord.gg/AgentOS) - Get help and share ideas
+- [Documentation](https://docs.AgentOS.dev) - Comprehensive guides and references
+- [Blog](https://AgentOS.dev/blog) - Latest updates and tutorials

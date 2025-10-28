@@ -1,0 +1,136 @@
+# Telemetry SDK
+
+Instrument your agents with comprehensive telemetry for monitoring, debugging, and optimization.
+
+## Overview
+
+The Telemetry SDK automatically tracks agent execution, performance metrics, errors, and custom events, providing deep insights into your agent systems.
+
+## Installation
+
+```bash
+npm install @agentos/telemetry
+```
+
+## Basic Setup
+
+```typescript
+import { Agent } from '@agentos/sdk';
+import { telemetry } from '@agentos/telemetry';
+
+// Initialize telemetry
+telemetry.init({
+  apiKey: process.env.AGENTOS_API_KEY,
+  projectId: 'your-project-id',
+});
+
+// Create agent with telemetry
+const agent = new Agent({
+  name: 'MyAgent',
+  model: 'gpt-4',
+  telemetry: {
+    enabled: true,
+    sampleRate: 1.0, // Track 100% of requests
+  },
+});
+```
+
+## Automatic Tracking
+
+Telemetry automatically captures:
+- Agent execution start/end
+- Input/output data
+- Token usage
+- Latency
+- Errors and exceptions
+- Model calls
+
+## Custom Events
+
+Track custom events:
+
+```typescript
+telemetry.track('custom_event', {
+  userId: 'user-123',
+  action: 'button_click',
+  metadata: { page: 'dashboard' },
+});
+```
+
+## Custom Metrics
+
+Record custom metrics:
+
+```typescript
+telemetry.metric('processing_time', 1250, {
+  unit: 'ms',
+  tags: { agent: 'DataProcessor' },
+});
+```
+
+## Spans and Traces
+
+Create custom spans for detailed tracing:
+
+```typescript
+const span = telemetry.startSpan('data_processing');
+
+try {
+  await processData();
+  span.setStatus('success');
+} catch (error) {
+  span.setStatus('error');
+  span.recordException(error);
+} finally {
+  span.end();
+}
+```
+
+## Context Propagation
+
+Propagate context across async operations:
+
+```typescript
+await telemetry.withContext({ userId: 'user-123' }, async () => {
+  await agent.run({ input: 'Process this' });
+  // Context automatically included in telemetry
+});
+```
+
+## Sampling
+
+Control data collection:
+
+```typescript
+telemetry.init({
+  apiKey: process.env.AGENTOS_API_KEY,
+  sampling: {
+    rate: 0.1, // Sample 10% of requests
+    rules: [
+      { condition: 'error', rate: 1.0 }, // Always sample errors
+      { condition: 'slow', rate: 1.0 },  // Always sample slow requests
+    ],
+  },
+});
+```
+
+## Best Practices
+
+- Enable telemetry in production
+- Use appropriate sample rates
+- Add context to events
+- Monitor telemetry overhead
+- Review metrics regularly
+- Set up alerts for anomalies
+
+## Next Steps
+
+- **[Monitoring Workflows](/docs/observability/monitoring)** - Monitor workflows
+- **[Cost Tracking](/docs/observability/cost-tracking)** - Track costs
+- **[Dashboard](/docs/observability/dashboard)** - Visualize data
+
+## Resources
+
+- [Telemetry API Reference](/docs/api/telemetry)
+- [Best Practices](https://agentos.dev/telemetry-best-practices)
+- [Performance Impact](https://agentos.dev/telemetry-performance)

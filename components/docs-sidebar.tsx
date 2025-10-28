@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { ChevronDown, Check, Code, Terminal, FileCode, FileJson, FileText, FileCode2 } from "lucide-react"
+import { ChevronDown, Check } from "lucide-react"
+import { siNodedotjs, siTypescript, siJavascript, siPython, siOpenapiinitiative } from "simple-icons"
 
 import {
   Sidebar,
@@ -23,11 +24,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 const sdks = [
-  { name: "Node.js", icon: Terminal },
-  { name: "TypeScript", icon: FileCode2 },
-  { name: "JavaScript", icon: FileCode },
-  { name: "Python", icon: FileText },
-  { name: "REST API", icon: FileJson },
+  { name: "Node.js", icon: siNodedotjs },
+  { name: "TypeScript", icon: siTypescript },
+  { name: "JavaScript", icon: siJavascript },
+  { name: "Python", icon: siPython },
+  { name: "REST API", icon: siOpenapiinitiative },
 ]
 
 const data = {
@@ -217,18 +218,22 @@ export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="w-full flex items-center gap-3 px-3 py-2 bg-background border rounded-md hover:bg-accent transition-colors text-sm">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-foreground text-background">
-                    {React.createElement(selectedSdk.icon, { className: "h-3 w-3" })}
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-foreground text-background p-1">
+                    <svg
+                      role="img"
+                      viewBox="0 0 24 24"
+                      className="h-3 w-3 fill-current"
+                      dangerouslySetInnerHTML={{ __html: selectedSdk.icon.path }}
+                    />
                   </div>
                   <span className="flex-1 text-left font-medium">
                     {selectedSdk.name}
                   </span>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[calc(16rem-1.5rem)] mx-1.5 max-h-[200px] overflow-y-auto" align="start" sideOffset={8}>
                 {sdks.map((sdk) => {
-                  const Icon = sdk.icon;
                   return (
                     <DropdownMenuItem
                       key={sdk.name}
@@ -236,8 +241,13 @@ export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
                       className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-md hover:bg-accent ${selectedSdk.name === sdk.name ? 'bg-accent' : ''
                         }`}
                     >
-                      <div className="flex h-4 w-4 items-center justify-center rounded-full bg-foreground text-background">
-
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-background p-1">
+                        <svg
+                          role="img"
+                          viewBox="0 0 24 24"
+                          className="h-3 w-3 fill-current"
+                          dangerouslySetInnerHTML={{ __html: sdk.icon.path }}
+                        />
                       </div>
                       <span className="flex-1 text-xs">{sdk.name}</span>
                       {selectedSdk.name === sdk.name && (

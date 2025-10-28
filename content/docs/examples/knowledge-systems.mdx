@@ -1,0 +1,179 @@
+# Knowledge Systems
+
+Build intelligent knowledge management systems with semantic search, knowledge graphs, and AI-powered retrieval.
+
+## Overview
+
+This example demonstrates building a comprehensive knowledge system that can ingest, organize, and retrieve information using AgentOS.
+
+## Architecture
+
+```
+Document Ingestion
+    ↓
+Processing & Embedding
+    ↓
+Knowledge Graph + Vector Store
+    ↓
+Query Agent
+    ↓
+Intelligent Retrieval & Response
+```
+
+## Implementation
+
+### Document Ingestion Agent
+
+```typescript
+import { Agent, KnowledgeGraph } from '@agentos/sdk';
+
+const ingestionAgent = new Agent({
+  name: 'DocumentProcessor',
+  model: 'gpt-4',
+  systemPrompt: 'You extract key information and entities from documents.',
+});
+
+// Process document
+async function ingestDocument(document: string) {
+  const analysis = await ingestionAgent.run({
+    input: `Extract entities and key facts from: ${document}`,
+  });
+  
+  // Store in knowledge graph
+  await kg.addEntities(analysis.entities);
+  await kg.addRelationships(analysis.relationships);
+  
+  // Store in vector database
+  await agent.memory.store({
+    content: document,
+    metadata: {
+      type: 'document',
+      entities: analysis.entities,
+    },
+  });
+}
+```
+
+### Knowledge Graph Setup
+
+```typescript
+const kg = new KnowledgeGraph({
+  name: 'CompanyKnowledge',
+  backend: 'neo4j',
+});
+
+// Define schema
+await kg.defineSchema({
+  entities: ['Person', 'Project', 'Document', 'Topic'],
+  relationships: [
+    { from: 'Person', to: 'Project', type: 'WORKS_ON' },
+    { from: 'Document', to: 'Topic', type: 'ABOUT' },
+  ],
+});
+```
+
+### Query Agent
+
+```typescript
+const queryAgent = new Agent({
+  name: 'KnowledgeAssistant',
+  model: 'gpt-4',
+  systemPrompt: 'You help users find information from the knowledge base.',
+  memory: {
+    longTerm: {
+      enabled: true,
+      vectorStore: 'pinecone',
+    },
+  },
+  knowledgeGraph: kg,
+});
+
+// Query knowledge
+async function queryKnowledge(question: string) {
+  // Semantic search in vector store
+  const relevant = await queryAgent.memory.search({
+    query: question,
+    limit: 5,
+  });
+  
+  // Query knowledge graph
+  const graphResults = await kg.query({
+    match: '(n)-[r]->(m)',
+    where: { relevance: question },
+  });
+  
+  // Generate response
+  const response = await queryAgent.run({
+    input: question,
+    context: {
+      documents: relevant,
+      graphData: graphResults,
+    },
+  });
+  
+  return response.output;
+}
+```
+
+## Features
+
+### Semantic Search
+
+```typescript
+// Find similar documents
+const similar = await queryAgent.memory.search({
+  query: 'machine learning projects',
+  limit: 10,
+  minRelevance: 0.7,
+});
+```
+
+### Entity Extraction
+
+```typescript
+// Extract entities from text
+const entities = await ingestionAgent.run({
+  input: `Extract entities: ${text}`,
+});
+```
+
+### Relationship Discovery
+
+```typescript
+// Find connections
+const connections = await kg.query({
+  match: '(a:Person)-[*1..3]-(b:Person)',
+  where: { 'a.name': 'John Doe' },
+  return: ['b', 'path'],
+});
+```
+
+## Use Cases
+
+- Corporate knowledge bases
+- Research paper management
+- Customer documentation
+- Internal wikis
+- FAQ systems
+- Learning platforms
+
+## Best Practices
+
+- Structure knowledge carefully
+- Use consistent entity types
+- Implement access controls
+- Keep knowledge updated
+- Monitor query performance
+- Validate extracted information
+
+## Next Steps
+
+- **[Knowledge Graph](/docs/platform/knowledge-graph)** - Learn knowledge graphs
+- **[Memory System](/docs/sdk/memory-system)** - Implement memory
+- **[Context Intelligence](/docs/platform/context-intelligence)** - Smart retrieval
+
+## Resources
+
+- [Full Example Code](https://github.com/agentos/examples/tree/main/knowledge-systems)
+- [Live Demo](https://demo.agentos.dev/knowledge-systems)
+- [Video Tutorial](https://agentos.dev/tutorials/knowledge-systems)

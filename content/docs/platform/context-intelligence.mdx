@@ -1,0 +1,99 @@
+# Context Intelligence
+
+Automatically determine and retrieve relevant context for agent interactions using AI-powered context analysis.
+
+## Overview
+
+Context Intelligence analyzes inputs to identify relevant information, retrieve pertinent memories, and assemble optimal context for agent responses, reducing token usage while improving relevance.
+
+## How It Works
+
+```typescript
+import { Agent } from '@agentos/sdk';
+
+const agent = new Agent({
+  name: 'SmartAgent',
+  model: 'gpt-4',
+  contextIntelligence: {
+    enabled: true,
+    strategy: 'semantic',
+    maxContextTokens: 4000,
+  },
+});
+```
+
+## Features
+
+### Automatic Context Retrieval
+
+Intelligently fetches relevant context:
+
+```typescript
+// Agent automatically retrieves relevant memories
+const response = await agent.run({
+  input: 'What were my preferences?',
+});
+// Context Intelligence finds and includes relevant preference data
+```
+
+### Entity Recognition
+
+Identifies key entities in inputs:
+
+```typescript
+contextIntelligence: {
+  enabled: true,
+  entityRecognition: true,
+  entities: ['person', 'organization', 'location', 'date'],
+}
+```
+
+### Relevance Scoring
+
+Ranks context by relevance:
+
+```typescript
+contextIntelligence: {
+  enabled: true,
+  relevanceThreshold: 0.7, // Only include highly relevant context
+  maxItems: 10,
+}
+```
+
+## Configuration
+
+### Strategies
+
+**Semantic**: Vector-based similarity
+```typescript
+strategy: 'semantic'
+```
+
+**Keyword**: Keyword matching
+```typescript
+strategy: 'keyword'
+```
+
+**Hybrid**: Combined approach
+```typescript
+strategy: 'hybrid'
+```
+
+## Best Practices
+
+- Enable for conversational agents
+- Adjust relevance thresholds based on needs
+- Monitor context quality
+- Balance context size with token costs
+- Use appropriate strategies for your use case
+
+## Next Steps
+
+- **[Cognitive Routing](/docs/platform/cognitive-routing)** - Smart request routing
+- **[Knowledge Graph](/docs/platform/knowledge-graph)** - Structured knowledge
+- **[Memory Engine](/docs/platform/memory-engine)** - Advanced memory
+
+## Resources
+
+- [Context Intelligence Guide](https://agentos.dev/context-intelligence)
+- [Optimization Tips](https://agentos.dev/context-optimization)

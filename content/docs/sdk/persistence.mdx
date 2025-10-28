@@ -1,0 +1,409 @@
+# Persistence Layer
+
+Configure storage backends for agent state, memory, and data persistence in AgentOS.
+
+## Overview
+
+The persistence layer handles storage of agent state, conversation history, memory, and other data. AgentOS supports multiple storage backends and provides flexible configuration options.
+
+## Storage Backends
+
+### PostgreSQL
+
+Relational database for structured data:
+
+```typescript
+import { Agent, storage } from '@agentos/sdk';
+
+const agent = new Agent({
+  name: 'PersistentAgent',
+  storage: storage.postgres({
+    host: 'localhost',
+    port: 5432,
+    database: 'agentos',
+    user: 'postgres',
+    password: process.env.DB_PASSWORD,
+  }),
+});
+```
+
+### MongoDB
+
+Document database for flexible schemas:
+
+```typescript
+storage: storage.mongodb({
+  url: 'mongodb://localhost:27017',
+  database: 'agentos',
+  collection: 'agents',
+})
+```
+
+### Redis
+
+In-memory storage for fast access:
+
+```typescript
+storage: storage.redis({
+  host: 'localhost',
+  port: 6379,
+  password: process.env.REDIS_PASSWORD,
+  ttl: 3600, // 1 hour expiration
+})
+```
+
+### File System
+
+Local file storage for development:
+
+```typescript
+storage: storage.fileSystem({
+  basePath: './data',
+  format: 'json',
+})
+```
+
+## Configuration
+
+### Connection Pooling
+
+```typescript
+storage: storage.postgres({
+  host: 'localhost',
+  port: 5432,
+  database: 'agentos',
+  pool: {
+    min: 2,
+    max: 10,
+    idleTimeoutMillis: 30000,
+  },
+})
+```
+
+### Encryption
+
+Encrypt data at rest:
+
+```typescript
+storage: storage.postgres({
+  host: 'localhost',
+  database: 'agentos',
+  encryption: {
+    enabled: true,
+    algorithm: 'aes-256-gcm',
+    key: process.env.ENCRYPTION_KEY,
+  },
+})
+```
+
+### Compression
+
+Reduce storage size:
+
+```typescript
+storage: storage.mongodb({
+  url: 'mongodb://localhost:27017',
+  compression: {
+    enabled: true,
+    algorithm: 'gzip',
+    level: 6,
+  },
+})
+```
+
+## Data Models
+
+### Agent State
+
+```typescript
+interface AgentState {
+  id: string;
+  name: string;
+  config: AgentConfig;
+  memory: MemoryState;
+  metadata: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### Conversation
+
+```typescript
+interface Conversation {
+  id: string;
+  agentId: string;
+  userId: string;
+  messages: Message[];
+  metadata: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### Memory Entry
+
+```typescript
+interface MemoryEntry {
+  id: string;
+  agentId: string;
+  content: string;
+  embedding: number[];
+  metadata: Record<string, any>;
+  createdAt: Date;
+  expiresAt?: Date;
+}
+```
+
+## Operations
+
+### Saving State
+
+```typescript
+// Automatic save
+await agent.run({ input: 'Hello' });
+// State automatically saved
+
+// Manual save
+await agent.save();
+```
+
+### Loading State
+
+```typescript
+// Load existing agent
+const agent = await Agent.load('agent-id-123');
+
+// Load with specific version
+const agent = await Agent.load('agent-id-123', {
+  version: '1.0.0',
+});
+```
+
+### Querying Data
+
+```typescript
+// Find conversations
+const conversations = await agent.storage.find({
+  collection: 'conversations',
+  filter: { userId: 'user-123' },
+  sort: { createdAt: -1 },
+  limit: 10,
+});
+
+// Aggregate data
+const stats = await agent.storage.aggregate({
+  collection: 'conversations',
+  pipeline: [
+    { $match: { agentId: 'agent-123' } },
+    { $group: { _id: '$userId', count: { $sum: 1 } } },
+  ],
+});
+```
+
+### Deleting Data
+
+```typescript
+// Delete specific conversation
+await agent.storage.delete({
+  collection: 'conversations',
+  id: 'conv-123',
+});
+
+// Bulk delete
+await agent.storage.deleteMany({
+  collection: 'conversations',
+  filter: { createdAt: { $lt: thirtyDaysAgo } },
+});
+```
+
+## Backup and Recovery
+
+### Automated Backups
+
+```typescript
+storage: storage.postgres({
+  host: 'localhost',
+  database: 'agentos',
+  backup: {
+    enabled: true,
+    schedule: '0 2 * * *', // Daily at 2 AM
+    retention: 30, // Keep 30 days
+    destination: 's3://backups/agentos',
+  },
+})
+```
+
+### Manual Backup
+
+```typescript
+// Create backup
+await agent.storage.backup({
+  destination: './backups/agent-backup.json',
+  include: ['state', 'conversations', 'memory'],
+});
+
+// Restore from backup
+await agent.storage.restore({
+  source: './backups/agent-backup.json',
+});
+```
+
+## Migration
+
+### Schema Migration
+
+```typescript
+import { migrate } from '@agentos/sdk';
+
+// Run migrations
+await migrate.up({
+  storage: agent.storage,
+  migrations: './migrations',
+});
+
+// Rollback
+await migrate.down({
+  storage: agent.storage,
+  steps: 1,
+});
+```
+
+### Data Migration
+
+```typescript
+// Migrate between storage backends
+await agent.storage.migrate({
+  from: storage.mongodb({ url: 'mongodb://localhost' }),
+  to: storage.postgres({ host: 'localhost' }),
+  collections: ['conversations', 'memory'],
+});
+```
+
+## Performance Optimization
+
+### Indexing
+
+```typescript
+// Create indexes
+await agent.storage.createIndex({
+  collection: 'conversations',
+  fields: { userId: 1, createdAt: -1 },
+});
+
+// Compound index
+await agent.storage.createIndex({
+  collection: 'memory',
+  fields: { agentId: 1, type: 1, createdAt: -1 },
+});
+```
+
+### Caching
+
+```typescript
+storage: storage.postgres({
+  host: 'localhost',
+  cache: {
+    enabled: true,
+    backend: 'redis',
+    ttl: 300, // 5 minutes
+    maxSize: 1000,
+  },
+})
+```
+
+### Batch Operations
+
+```typescript
+// Batch insert
+await agent.storage.insertMany({
+  collection: 'memory',
+  documents: memoryEntries,
+  batchSize: 100,
+});
+
+// Batch update
+await agent.storage.updateMany({
+  collection: 'conversations',
+  filter: { status: 'pending' },
+  update: { status: 'processed' },
+});
+```
+
+## Monitoring
+
+### Storage Metrics
+
+```typescript
+const metrics = await agent.storage.getMetrics();
+
+console.log({
+  connections: metrics.activeConnections,
+  operations: metrics.operationsPerSecond,
+  latency: metrics.averageLatency,
+  storage: metrics.storageUsed,
+});
+```
+
+### Health Checks
+
+```typescript
+// Check storage health
+const health = await agent.storage.healthCheck();
+
+if (!health.healthy) {
+  console.error('Storage unhealthy:', health.issues);
+}
+```
+
+## Best Practices
+
+- Use connection pooling for better performance
+- Implement proper indexing for frequently queried fields
+- Enable encryption for sensitive data
+- Set up automated backups
+- Monitor storage usage and performance
+- Use appropriate storage backend for your use case
+- Implement data retention policies
+- Test backup and recovery procedures
+
+## Troubleshooting
+
+### Connection Issues
+
+```typescript
+// Retry logic
+storage: storage.postgres({
+  host: 'localhost',
+  retry: {
+    maxAttempts: 3,
+    backoff: 'exponential',
+  },
+})
+```
+
+### Performance Issues
+
+```typescript
+// Enable query logging
+storage: storage.postgres({
+  host: 'localhost',
+  logging: {
+    enabled: true,
+    slowQueryThreshold: 1000, // Log queries > 1s
+  },
+})
+```
+
+## Next Steps
+
+- **[API Integration](/docs/sdk/api-integration)** - Connect to external services
+- **[Memory System](/docs/sdk/memory-system)** - Configure memory storage
+- **[Observability](/docs/observability/dashboard)** - Monitor storage performance
+- **[Examples](/docs/examples/knowledge-systems)** - See persistence in action
+
+## Resources
+
+- [Storage Backend Comparison](https://agentos.dev/storage-comparison)
+- [Performance Tuning Guide](https://agentos.dev/performance-tuning)
+- [Backup Best Practices](https://agentos.dev/backup-best-practices)

@@ -1,0 +1,87 @@
+# Knowledge Graph
+
+Build and query structured knowledge representations for enhanced agent reasoning and information retrieval.
+
+## Overview
+
+Knowledge Graphs store information as entities and relationships, enabling agents to understand connections, perform complex queries, and reason about structured data.
+
+## Creating a Knowledge Graph
+
+```typescript
+import { KnowledgeGraph } from '@agentos/sdk';
+
+const kg = new KnowledgeGraph({
+  name: 'CompanyKnowledge',
+  backend: 'neo4j',
+});
+
+// Add entities
+await kg.addEntity({
+  type: 'Person',
+  id: 'john-doe',
+  properties: {
+    name: 'John Doe',
+    role: 'Engineer',
+  },
+});
+
+// Add relationships
+await kg.addRelationship({
+  from: 'john-doe',
+  to: 'engineering-team',
+  type: 'MEMBER_OF',
+});
+```
+
+## Querying
+
+```typescript
+// Find related entities
+const results = await kg.query({
+  match: '(p:Person)-[:WORKS_ON]->(project:Project)',
+  where: { 'p.name': 'John Doe' },
+  return: ['project'],
+});
+
+// Semantic search
+const similar = await kg.semanticSearch({
+  query: 'AI projects',
+  limit: 10,
+});
+```
+
+## Agent Integration
+
+```typescript
+const agent = new Agent({
+  name: 'KnowledgeAgent',
+  model: 'gpt-4',
+  knowledgeGraph: kg,
+});
+
+// Agent automatically queries knowledge graph
+const response = await agent.run({
+  input: 'Who works on the AI project?',
+});
+```
+
+## Best Practices
+
+- Model domain knowledge carefully
+- Use consistent entity types
+- Index frequently queried properties
+- Implement access controls
+- Monitor query performance
+- Keep graph updated
+
+## Next Steps
+
+- **[Memory Engine](/docs/platform/memory-engine)** - Advanced memory
+- **[Context Intelligence](/docs/platform/context-intelligence)** - Smart context
+- **[Examples](/docs/examples/knowledge-systems)** - Knowledge system examples
+
+## Resources
+
+- [Knowledge Graph Guide](https://agentos.dev/knowledge-graphs)
+- [Graph Modeling](https://agentos.dev/graph-modeling)

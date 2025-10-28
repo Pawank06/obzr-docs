@@ -1,0 +1,187 @@
+# Multi-Agent Systems
+
+Coordinate multiple agents to solve complex problems through collaboration and specialization.
+
+## Overview
+
+Multi-agent systems enable you to build sophisticated applications where multiple specialized agents work together, each contributing their unique capabilities to achieve a common goal.
+
+## Creating Multi-Agent Systems
+
+### Basic Setup
+
+```typescript
+import { Agent, MultiAgentSystem } from '@agentos/sdk';
+
+const researchAgent = new Agent({
+  name: 'Researcher',
+  model: 'gpt-4',
+  systemPrompt: 'You are a research specialist. Find and analyze information.',
+});
+
+const writerAgent = new Agent({
+  name: 'Writer',
+  model: 'gpt-4',
+  systemPrompt: 'You are a content writer. Create engaging articles.',
+});
+
+const system = new MultiAgentSystem({
+  agents: [researchAgent, writerAgent],
+  coordinator: 'sequential',
+});
+```
+
+### Running the System
+
+```typescript
+const result = await system.run({
+  input: 'Write an article about AI trends',
+  workflow: [
+    { agent: 'Researcher', task: 'research' },
+    { agent: 'Writer', task: 'write' },
+  ],
+});
+```
+
+## Coordination Patterns
+
+### Sequential Execution
+
+Agents execute one after another:
+
+```typescript
+const system = new MultiAgentSystem({
+  agents: [agent1, agent2, agent3],
+  coordinator: 'sequential',
+});
+```
+
+### Parallel Execution
+
+Multiple agents work simultaneously:
+
+```typescript
+const system = new MultiAgentSystem({
+  agents: [agent1, agent2, agent3],
+  coordinator: 'parallel',
+  aggregator: 'merge', // Combine results
+});
+```
+
+### Hierarchical
+
+Manager agent coordinates worker agents:
+
+```typescript
+const managerAgent = new Agent({
+  name: 'Manager',
+  model: 'gpt-4',
+  systemPrompt: 'You coordinate other agents and delegate tasks.',
+});
+
+const system = new MultiAgentSystem({
+  manager: managerAgent,
+  workers: [worker1, worker2, worker3],
+  coordinator: 'hierarchical',
+});
+```
+
+## Agent Communication
+
+### Message Passing
+
+```typescript
+// Agent 1 sends message to Agent 2
+await agent1.sendMessage({
+  to: 'Agent2',
+  content: 'Here is the research data',
+  data: researchResults,
+});
+
+// Agent 2 receives and processes
+agent2.onMessage(async (message) => {
+  console.log('Received from:', message.from);
+  return await processData(message.data);
+});
+```
+
+### Shared Context
+
+```typescript
+const sharedContext = {
+  projectId: 'proj-123',
+  userId: 'user-456',
+  data: {},
+};
+
+const system = new MultiAgentSystem({
+  agents: [agent1, agent2],
+  sharedContext,
+});
+```
+
+## Use Cases
+
+### Content Creation Pipeline
+
+```typescript
+const system = new MultiAgentSystem({
+  agents: [
+    researchAgent,    // Gather information
+    outlineAgent,     // Create structure
+    writerAgent,      // Write content
+    editorAgent,      // Review and edit
+  ],
+  coordinator: 'sequential',
+});
+```
+
+### Customer Support
+
+```typescript
+const system = new MultiAgentSystem({
+  agents: [
+    triageAgent,      // Classify issue
+    technicalAgent,   // Handle technical issues
+    billingAgent,     // Handle billing issues
+    escalationAgent,  // Escalate complex cases
+  ],
+  coordinator: 'conditional',
+});
+```
+
+### Data Analysis
+
+```typescript
+const system = new MultiAgentSystem({
+  agents: [
+    dataCollector,    // Gather data
+    dataAnalyzer,     // Analyze patterns
+    visualizer,       // Create charts
+    reporter,         // Generate report
+  ],
+  coordinator: 'sequential',
+});
+```
+
+## Best Practices
+
+- Design agents with clear, focused responsibilities
+- Use appropriate coordination patterns for your use case
+- Implement error handling and fallbacks
+- Monitor agent interactions and performance
+- Test multi-agent workflows thoroughly
+- Document agent roles and communication protocols
+
+## Next Steps
+
+- **[Workflow Graphs](/docs/orchestration/workflow-graphs)** - Define complex workflows
+- **[Runtime Manager](/docs/orchestration/runtime-manager)** - Manage execution
+- **[Agent Collaboration](/docs/orchestration/collaboration)** - Advanced collaboration patterns
+- **[Examples](/docs/examples/developer-assistant)** - See multi-agent systems in action
+
+## Resources
+
+- [Multi-Agent Design Patterns](https://agentos.dev/multi-agent-patterns)
+- [Coordination Strategies](https://agentos.dev/coordination)
+- [Performance Optimization](https://agentos.dev/multi-agent-performance)

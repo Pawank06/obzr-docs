@@ -1,0 +1,102 @@
+# Memory API
+
+Complete API reference for memory management in AgentOS.
+
+## Memory Class
+
+### store()
+
+Store a memory:
+
+```typescript
+memory.store(entry: MemoryEntry): Promise<string>
+```
+
+**Parameters:**
+```typescript
+{
+  content: string;
+  metadata?: Record<string, any>;
+  namespace?: string;
+  expiresAt?: Date;
+}
+```
+
+**Returns:** Memory ID
+
+### search()
+
+Search memories:
+
+```typescript
+memory.search(query: SearchQuery): Promise<Memory[]>
+```
+
+**Parameters:**
+```typescript
+{
+  query: string;
+  limit?: number;
+  filter?: Record<string, any>;
+  minRelevance?: number;
+}
+```
+
+### update()
+
+Update a memory:
+
+```typescript
+memory.update(id: string, updates: Partial<MemoryEntry>): Promise<void>
+```
+
+### delete()
+
+Delete a memory:
+
+```typescript
+memory.delete(id: string): Promise<void>
+```
+
+### clear()
+
+Clear all memories:
+
+```typescript
+memory.clear(filter?: Record<string, any>): Promise<void>
+```
+
+## Types
+
+### MemoryEntry
+
+```typescript
+interface MemoryEntry {
+  content: string;
+  metadata?: Record<string, any>;
+  namespace?: string;
+  expiresAt?: Date;
+}
+```
+
+### Memory
+
+```typescript
+interface Memory {
+  id: string;
+  content: string;
+  metadata: Record<string, any>;
+  createdAt: Date;
+  relevance?: number;
+}
+```
+
+## Next Steps
+
+- **[Agent API](/docs/api/agent)** - Agent API reference
+- **[Memory System](/docs/sdk/memory-system)** - Memory guide
+
+## Resources
+
+- [Full API Documentation](https://agentos.dev/api/memory)
+- [TypeScript Definitions](https://github.com/agentos/sdk/blob/main/types/memory.d.ts)

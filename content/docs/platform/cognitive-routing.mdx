@@ -1,0 +1,274 @@
+# Cognitive Routing
+
+Intelligently route requests to the most appropriate agent or model based on task complexity, cost, and performance requirements.
+
+<InfoCallout title="What is Cognitive Routing?">
+  Cognitive Routing analyzes incoming requests and automatically selects the optimal agent, model, or workflow to handle them, balancing quality, cost, and latency.
+</InfoCallout>
+
+## Overview
+
+Cognitive Routing is a powerful feature that helps you optimize your agent systems by automatically directing requests to the most suitable handler based on various criteria.
+
+<FeatureGrid>
+  <FeatureCard 
+    title="Complexity Analysis" 
+    description="Automatically assess task complexity and route to appropriate models"
+  />
+  <FeatureCard 
+    title="Cost Optimization" 
+    description="Balance quality and cost by selecting cost-effective models"
+  />
+  <FeatureCard 
+    title="Performance Tuning" 
+    description="Optimize for speed by routing to faster models when needed"
+  />
+</FeatureGrid>
+
+<SectionDivider />
+
+## Basic Setup
+
+<Step number={1} title="Create a Cognitive Router">
+  Initialize the router with your agents:
+
+  <CodeBlock language="typescript" filename="router-setup.ts">
+{`import { CognitiveRouter } from '@agentos/sdk';
+
+const router = new CognitiveRouter({
+  agents: [simpleAgent, complexAgent, specialistAgent],
+  strategy: 'auto',
+});
+
+const response = await router.route({
+  input: 'Analyze this data',
+});`}
+  </CodeBlock>
+</Step>
+
+<SectionDivider />
+
+## Routing Strategies
+
+<Tabs defaultValue="complexity">
+  <TabsList>
+    <TabsTrigger value="complexity">Complexity-Based</TabsTrigger>
+    <TabsTrigger value="cost">Cost-Optimized</TabsTrigger>
+    <TabsTrigger value="performance">Performance-Based</TabsTrigger>
+  </TabsList>
+  
+  <TabsContent value="complexity">
+    <Card>
+      <CardHeader>
+        <CardTitle>Complexity-Based Routing</CardTitle>
+        <CardDescription>
+          Routes based on task complexity analysis
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <CodeBlock language="typescript">
+{`strategy: 'complexity',
+rules: [
+  { complexity: 'low', agent: 'gpt-3.5-turbo' },
+  { complexity: 'medium', agent: 'gpt-4' },
+  { complexity: 'high', agent: 'gpt-4-turbo' },
+]`}
+        </CodeBlock>
+      </CardContent>
+    </Card>
+  </TabsContent>
+  
+  <TabsContent value="cost">
+    <Card>
+      <CardHeader>
+        <CardTitle>Cost-Optimized Routing</CardTitle>
+        <CardDescription>
+          Minimizes costs while maintaining quality
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <CodeBlock language="typescript">
+{`strategy: 'cost-optimized',
+maxCost: 0.10,
+qualityThreshold: 0.8,`}
+        </CodeBlock>
+      </CardContent>
+    </Card>
+  </TabsContent>
+  
+  <TabsContent value="performance">
+    <Card>
+      <CardHeader>
+        <CardTitle>Performance-Based Routing</CardTitle>
+        <CardDescription>
+          Optimizes for speed and latency
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <CodeBlock language="typescript">
+{`strategy: 'performance',
+maxLatency: 2000, // 2 seconds`}
+        </CodeBlock>
+      </CardContent>
+    </Card>
+  </TabsContent>
+</Tabs>
+
+<SectionDivider />
+
+## Custom Routing Rules
+
+<Step number={2} title="Define custom rules">
+  Add specific routing logic for your use case:
+
+  <CodeBlock language="typescript" filename="custom-rules.ts">
+{`router.addRule({
+  condition: (input) => input.includes('code'),
+  agent: 'CodeSpecialistAgent',
+  priority: 10,
+});`}
+  </CodeBlock>
+</Step>
+
+<TipCallout title="Pro Tip">
+  Use priority values to control rule precedence. Higher priority rules are evaluated first.
+</TipCallout>
+
+<SectionDivider />
+
+## Fallback Handling
+
+<Card>
+  <CardHeader>
+    <CardTitle>Automatic Fallbacks</CardTitle>
+    <CardDescription>
+      Configure fallback behavior for error scenarios
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <CodeBlock language="typescript" filename="fallback-config.ts">
+{`const router = new CognitiveRouter({
+  agents: [primaryAgent, fallbackAgent],
+  fallback: {
+    enabled: true,
+    conditions: ['timeout', 'error', 'rate_limit'],
+  },
+});`}
+    </CodeBlock>
+  </CardContent>
+</Card>
+
+<WarningCallout title="Important">
+  Always configure fallback agents to ensure system reliability during failures or rate limits.
+</WarningCallout>
+
+<SectionDivider />
+
+## Configuration Options
+
+<PropertyTable properties={[
+  { name: 'agents', type: 'Agent[]', required: true, description: 'Array of agents available for routing' },
+  { name: 'strategy', type: 'string', required: true, description: 'Routing strategy: auto, complexity, cost-optimized, or performance' },
+  { name: 'maxCost', type: 'number', description: 'Maximum cost per request (for cost-optimized strategy)' },
+  { name: 'maxLatency', type: 'number', description: 'Maximum latency in milliseconds (for performance strategy)' },
+  { name: 'fallback', type: 'FallbackConfig', description: 'Fallback configuration for error handling' },
+]} />
+
+<SectionDivider />
+
+## Best Practices
+
+<FeatureGrid>
+  <Card>
+    <CardHeader>
+      <CardTitle>Define Clear Rules</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm text-muted-foreground">
+        Create explicit routing rules that match your use cases
+      </p>
+    </CardContent>
+  </Card>
+  
+  <Card>
+    <CardHeader>
+      <CardTitle>Monitor Decisions</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm text-muted-foreground">
+        Track routing decisions to optimize your strategy
+      </p>
+    </CardContent>
+  </Card>
+  
+  <Card>
+    <CardHeader>
+      <CardTitle>Test Strategies</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm text-muted-foreground">
+        Validate routing behavior with different input types
+      </p>
+    </CardContent>
+  </Card>
+  
+  <Card>
+    <CardHeader>
+      <CardTitle>Balance Cost & Quality</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm text-muted-foreground">
+        Find the right balance between cost and response quality
+      </p>
+    </CardContent>
+  </Card>
+  
+  <Card>
+    <CardHeader>
+      <CardTitle>Implement Fallbacks</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm text-muted-foreground">
+        Always configure fallback options for reliability
+      </p>
+    </CardContent>
+  </Card>
+  
+  <Card>
+    <CardHeader>
+      <CardTitle>Track Performance</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm text-muted-foreground">
+        Monitor routing performance and adjust as needed
+      </p>
+    </CardContent>
+  </Card>
+</FeatureGrid>
+
+<SectionDivider />
+
+## Next Steps
+
+<Card>
+  <CardContent className="pt-6">
+    <div className="space-y-4">
+      <div>
+        <h3 className="font-semibold mb-2">Related Documentation</h3>
+        <ul className="space-y-2 text-sm">
+          <li>→ [Context Intelligence](/docs/platform/context-intelligence) - Smart context retrieval</li>
+          <li>→ [Knowledge Graph](/docs/platform/knowledge-graph) - Structured knowledge</li>
+          <li>→ [Multi-Agent Systems](/docs/orchestration/multi-agent) - Coordinate agents</li>
+        </ul>
+      </div>
+      
+      <div>
+        <h3 className="font-semibold mb-2">Resources</h3>
+        <ul className="space-y-2 text-sm">
+          <li>→ [Routing Strategies Guide](https://agentos.dev/routing-strategies)</li>
+          <li>→ [Cost Optimization Tips](https://agentos.dev/cost-optimization)</li>
+        </ul>
+      </div>
+    </div>
+  </CardContent>
+</Card>

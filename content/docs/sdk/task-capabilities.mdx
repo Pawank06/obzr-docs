@@ -1,0 +1,404 @@
+# Task Capabilities
+
+Extend your agents with custom capabilities and tools to interact with external systems and perform complex tasks.
+
+## Overview
+
+Capabilities are functions that agents can call to perform specific tasks beyond text generation. They enable agents to search the web, execute code, call APIs, and interact with your systems.
+
+## Built-in Capabilities
+
+AgentOS provides several pre-built capabilities:
+
+```typescript
+import { Agent, capabilities } from '@agentos/sdk';
+
+const agent = new Agent({
+  name: 'CapableAgent',
+  model: 'gpt-4',
+  capabilities: [
+    capabilities.webSearch(),
+    capabilities.codeExecution(),
+    capabilities.fileOperations(),
+  ],
+});
+```
+
+### Web Search
+
+```typescript
+capabilities.webSearch({
+  provider: 'google',
+  maxResults: 5,
+})
+```
+
+### Code Execution
+
+```typescript
+capabilities.codeExecution({
+  languages: ['python', 'javascript'],
+  timeout: 30000,
+  sandbox: true,
+})
+```
+
+### File Operations
+
+```typescript
+capabilities.fileOperations({
+  allowedPaths: ['/data'],
+  maxFileSize: 10485760, // 10MB
+})
+```
+
+## Custom Capabilities
+
+Create your own capabilities:
+
+```typescript
+agent.addCapability({
+  name: 'sendEmail',
+  description: 'Send an email to a user',
+  parameters: {
+    to: {
+      type: 'string',
+      description: 'Recipient email address',
+      required: true,
+    },
+    subject: {
+      type: 'string',
+      description: 'Email subject',
+      required: true,
+    },
+    body: {
+      type: 'string',
+      description: 'Email body content',
+      required: true,
+    },
+  },
+  execute: async ({ to, subject, body }) => {
+    await emailService.send({ to, subject, body });
+    return { success: true, messageId: 'msg-123' };
+  },
+});
+```
+
+## Capability Definition
+
+### Structure
+
+```typescript
+interface Capability {
+  name: string;
+  description: string;
+  parameters: ParameterSchema;
+  execute: (params: any) => Promise<any>;
+  requiresConfirmation?: boolean;
+  rateLimit?: RateLimitConfig;
+}
+```
+
+### Parameter Schema
+
+```typescript
+parameters: {
+  userId: {
+    type: 'string',
+    description: 'The user ID',
+    required: true,
+    pattern: '^[a-z0-9-]+$',
+  },
+  amount: {
+    type: 'number',
+    description: 'Amount in USD',
+    required: true,
+    minimum: 0,
+    maximum: 10000,
+  },
+  options: {
+    type: 'array',
+    description: 'List of options',
+    items: { type: 'string' },
+  },
+}
+```
+
+## Using Capabilities
+
+### Automatic Invocation
+
+Agents automatically call capabilities when needed:
+
+```typescript
+const response = await agent.run({
+  input: 'Search for the latest news about AI',
+});
+
+// Agent automatically uses webSearch capability
+```
+
+### Manual Invocation
+
+Call capabilities directly:
+
+```typescript
+const result = await agent.executeCapability('sendEmail', {
+  to: 'user@example.com',
+  subject: 'Hello',
+  body: 'This is a test email',
+});
+```
+
+### Capability Chaining
+
+Agents can chain multiple capabilities:
+
+```typescript
+// Agent might:
+// 1. Search for information
+// 2. Process the results
+// 3. Send an email with findings
+const response = await agent.run({
+  input: 'Research AI trends and email me a summary',
+});
+```
+
+## Advanced Features
+
+### Confirmation Required
+
+Require user confirmation before execution:
+
+```typescript
+agent.addCapability({
+  name: 'deleteData',
+  description: 'Delete user data',
+  requiresConfirmation: true,
+  execute: async ({ userId }) => {
+    await database.users.delete(userId);
+    return { success: true };
+  },
+});
+```
+
+### Rate Limiting
+
+Limit capability usage:
+
+```typescript
+agent.addCapability({
+  name: 'apiCall',
+  description: 'Call external API',
+  rateLimit: {
+    maxCalls: 10,
+    window: 60000, // 1 minute
+  },
+  execute: async ({ endpoint }) => {
+    return await fetch(endpoint);
+  },
+});
+```
+
+### Error Handling
+
+Handle capability errors gracefully:
+
+```typescript
+agent.addCapability({
+  name: 'riskyOperation',
+  description: 'Perform a risky operation',
+  execute: async (params) => {
+    try {
+      const result = await performOperation(params);
+      return { success: true, result };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+        retryable: true,
+      };
+    },
+  },
+});
+```
+
+### Streaming Results
+
+Stream capability results:
+
+```typescript
+agent.addCapability({
+  name: 'longRunningTask',
+  description: 'Execute a long-running task',
+  streaming: true,
+  execute: async function* (params) {
+    for (let i = 0; i < 10; i++) {
+      await delay(1000);
+      yield { progress: (i + 1) * 10, status: 'processing' };
+    }
+    return { success: true };
+  },
+});
+```
+
+## Common Patterns
+
+### Database Operations
+
+```typescript
+agent.addCapability({
+  name: 'queryDatabase',
+  description: 'Query the database',
+  parameters: {
+    query: { type: 'string', required: true },
+  },
+  execute: async ({ query }) => {
+    const results = await db.query(query);
+    return { results, count: results.length };
+  },
+});
+```
+
+### API Integration
+
+```typescript
+agent.addCapability({
+  name: 'fetchWeather',
+  description: 'Get weather information',
+  parameters: {
+    city: { type: 'string', required: true },
+  },
+  execute: async ({ city }) => {
+    const response = await fetch(
+      `https://api.weather.com/v1/weather?city=${city}`
+    );
+    return await response.json();
+  },
+});
+```
+
+### File Processing
+
+```typescript
+agent.addCapability({
+  name: 'processFile',
+  description: 'Process a file',
+  parameters: {
+    filePath: { type: 'string', required: true },
+    operation: { type: 'string', enum: ['read', 'parse', 'analyze'] },
+  },
+  execute: async ({ filePath, operation }) => {
+    const content = await fs.readFile(filePath, 'utf-8');
+    switch (operation) {
+      case 'read':
+        return { content };
+      case 'parse':
+        return { data: JSON.parse(content) };
+      case 'analyze':
+        return { wordCount: content.split(' ').length };
+    }
+  },
+});
+```
+
+## Security
+
+### Input Validation
+
+Always validate capability inputs:
+
+```typescript
+agent.addCapability({
+  name: 'secureOperation',
+  description: 'Perform a secure operation',
+  parameters: {
+    userId: {
+      type: 'string',
+      pattern: '^[a-z0-9-]+$',
+      maxLength: 50,
+    },
+  },
+  execute: async ({ userId }) => {
+    // Validate
+    if (!isValidUserId(userId)) {
+      throw new Error('Invalid user ID');
+    }
+    // Execute
+    return await performOperation(userId);
+  },
+});
+```
+
+### Permission Checks
+
+Implement permission checks:
+
+```typescript
+agent.addCapability({
+  name: 'adminOperation',
+  description: 'Perform admin operation',
+  execute: async (params, context) => {
+    if (!context.user.isAdmin) {
+      throw new Error('Unauthorized');
+    }
+    return await adminOperation(params);
+  },
+});
+```
+
+### Sandboxing
+
+Use sandboxed execution for untrusted code:
+
+```typescript
+capabilities.codeExecution({
+  sandbox: true,
+  allowedModules: ['lodash', 'moment'],
+  timeout: 5000,
+  memoryLimit: 128 * 1024 * 1024, // 128MB
+})
+```
+
+## Testing Capabilities
+
+```typescript
+import { expect } from 'chai';
+
+describe('Custom Capabilities', () => {
+  it('should send email', async () => {
+    const result = await agent.executeCapability('sendEmail', {
+      to: 'test@example.com',
+      subject: 'Test',
+      body: 'Test email',
+    });
+    
+    expect(result.success).to.be.true;
+    expect(result.messageId).to.exist;
+  });
+});
+```
+
+## Best Practices
+
+- Keep capabilities focused and single-purpose
+- Provide clear, descriptive names and descriptions
+- Validate all inputs thoroughly
+- Implement proper error handling
+- Use rate limiting for expensive operations
+- Log capability usage for monitoring
+- Test capabilities independently
+- Document expected inputs and outputs
+
+## Next Steps
+
+- **[API Integration](/docs/sdk/api-integration)** - Connect to external APIs
+- **[Persistence Layer](/docs/sdk/persistence)** - Store capability results
+- **[Agent API](/docs/api/agent)** - Complete API reference
+- **[Examples](/docs/examples/developer-assistant)** - See capabilities in action
+
+## Resources
+
+- [Capability Best Practices](https://agentos.dev/capability-best-practices)
+- [Security Guidelines](https://agentos.dev/security)
+- [Built-in Capabilities Reference](https://agentos.dev/capabilities)
