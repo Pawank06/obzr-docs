@@ -1,4 +1,5 @@
 import { DocsSidebar } from "@/components/docs-sidebar"
+import { DocsFooter } from "@/components/docs-footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -21,8 +22,8 @@ export default function DocsLayout({
       }
     >
       <DocsSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center justify-between gap-4 px-6 border-b">
+      <SidebarInset className="flex flex-col">
+        <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center justify-between gap-4 px-6 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="flex items-center gap-2">
             <div className="relative w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -43,8 +44,9 @@ export default function DocsLayout({
             Sign Up
           </Button>
         </header>
-        <main className="flex flex-1 flex-col">
+        <main className="flex flex-1 flex-col overflow-y-auto">
           {children}
+          {/* <DocsFooter /> */}
         </main>
       </SidebarInset>
     </SidebarProvider>

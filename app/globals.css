@@ -119,4 +119,31 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Custom thin scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: oklch(0.8 0 0);
+    border-radius: 3px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.7 0 0);
+  }
+  
+  .dark ::-webkit-scrollbar-thumb {
+    background: oklch(0.3 0 0);
+  }
+  
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.4 0 0);
+  }
 }
