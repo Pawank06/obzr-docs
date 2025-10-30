@@ -1,112 +1,140 @@
 # Introduction
 
-Welcome to AgentOS, a comprehensive AI agent platform that combines advanced memory, intelligent orchestration, real-time observability, and cognitive intelligence to build production-ready AI systems.
+Welcome to AgentOS, a production-grade AI agent platform built on temporal memory, secure agent isolation, and enterprise-ready observability for building intelligent, auditable AI systems.
 
-## Overview
+## What is AgentOS?
 
-AgentOS is a production-grade AI agent platform designed to solve the complexities of building, deploying, and managing intelligent AI systems at scale. It provides four core pillars that work together seamlessly:
+AgentOS is a comprehensive platform designed to solve the complexities of building, deploying, and managing intelligent AI systems at scale. Unlike traditional AI frameworks, AgentOS provides a security-first, audit-ready foundation with unique capabilities:
 
-- **Advanced Memory System**: Dual-layer STM/LTM architecture for contextual awareness
-- **Multi-Agent Orchestration**: Coordinate multiple agents with workflow graphs and runtime management
-- **Real-Time Observability**: Monitor, track, and optimize agent performance with comprehensive telemetry
-- **Platform Intelligence**: Cognitive routing, context intelligence, and knowledge graphs for smarter decisions
+**Core Differentiators:**
+- **Bi-Temporal Memory**: Time-travel queries and complete audit trails with our temporal knowledge graph
+- **Agent Isolation**: Secure runtime containers/microVMs with IAM and resource isolation
+- **Audit-First Design**: Complete traceability of every agent action and decision
+- **Rapid Onboarding**: 10-minute setup with CLI, SDK, and dashboard
+
+**Target Users:**
+- Enterprise developers building compliant AI systems
+- Teams requiring audit trails and security guarantees
+- Organizations deploying multi-agent workflows at scale
+- Developers needing temporal data management
 
 <InfoCallout title="What You'll Build">
-  With AgentOS, you can create sophisticated AI systems that remember context,
-  coordinate multiple agents, monitor performance in real-time, and make
-  intelligent routing decisions - all while maintaining production-grade
-  reliability and scalability.
+  With AgentOS, you can create sophisticated AI systems with complete audit
+  trails, secure agent isolation, temporal memory for time-travel queries, and
+  production-grade orchestration - all while maintaining enterprise security and
+  compliance standards.
 </InfoCallout>
 
 <FeatureGrid>
   <FeatureCard
-    title="Advanced Memory System"
-    description="Dual-layer STM/LTM architecture with intelligent memory promotion and consolidation"
+    title="Temporal Memory"
+    description="Bi-temporal knowledge graph with time-travel queries, history tracking, and conflict resolution"
+  />
+  <FeatureCard
+    title="Agent Isolation"
+    description="Secure runtime containers with IAM, resource limits, and complete isolation guarantees"
+  />
+  <FeatureCard
+    title="Audit & Compliance"
+    description="Complete traceability with audit logs, RBAC, data residency, and SOC2 practices"
   />
   <FeatureCard
     title="Multi-Agent Orchestration"
-    description="Coordinate multiple agents with workflow graphs and runtime management"
+    description="DAG-based workflows with error handling, parallelism, and agent collaboration"
   />
   <FeatureCard
     title="Real-Time Observability"
-    description="Comprehensive telemetry, monitoring, and cost tracking for all agent operations"
+    description="Comprehensive telemetry, tracing, dashboards, metrics, and cost tracking"
   />
   <FeatureCard
-    title="Cognitive Routing"
-    description="Intelligent request routing based on context, capability, and performance"
-  />
-  <FeatureCard
-    title="Knowledge Graph"
-    description="Build and query interconnected knowledge structures for complex reasoning"
-  />
-  <FeatureCard
-    title="Production Ready"
-    description="Enterprise security, high performance, and multi-LLM support out of the box"
+    title="Developer Experience"
+    description="TypeScript SDK, CLI tools, REST API, and 10-minute quickstart setup"
   />
 </FeatureGrid>
 
 ## Why AgentOS?
 
-Building production-ready AI systems requires more than just connecting to an LLM. AgentOS provides a complete platform that addresses the full lifecycle of AI agent development:
+AgentOS stands apart from traditional AI frameworks by providing enterprise-grade capabilities that competitors lack:
 
-### 1. Intelligent Memory Management
+### Robust Auditability
 
-AgentOS's memory system mimics human memory with a dual-layer architecture:
+Every agent action is tracked with complete traceability:
 
-- **Short-Term Memory (STM)**: Redis-based storage with TTL for recent interactions (< 10ms access time)
-- **Long-Term Memory (LTM)**: PostgreSQL + ChromaDB for persistent, searchable memories
-- **Importance Scoring**: 6-factor algorithm determines memory priority and automatic promotion
-- **Memory Consolidation**: Reduces redundancy by clustering similar memories and creating summaries
-- **Hybrid Retrieval**: Combines semantic search with keyword matching for optimal recall
+- **Temporal Knowledge Graph**: Bi-temporal data model tracks both transaction time and valid time
+- **Time-Travel Queries**: Query system state at any point in history
+- **Audit Logs**: Immutable logs of all agent decisions, actions, and data access
+- **Compliance Ready**: Built-in support for SOC2, GDPR, and regulatory requirements
+- **Conflict Resolution**: Automatic handling of concurrent updates with full history
 
-### 2. Multi-Agent Orchestration
+### Security-First Design
 
-Coordinate complex workflows with multiple specialized agents:
+Enterprise security built into every layer:
 
-- **Workflow Graphs**: Define agent interactions with DAG-based workflows
-- **Runtime Manager**: Dynamic agent lifecycle management and resource allocation
-- **Agent Collaboration**: Built-in communication protocols for agent-to-agent interaction
-- **Task Distribution**: Intelligent workload distribution across agent pools
-- **Failure Recovery**: Automatic retry logic and graceful degradation
+- **Agent Isolation**: Each agent runs in isolated containers/microVMs with resource limits
+- **IAM Integration**: Role-based access control (RBAC) with fine-grained permissions
+- **Data Residency**: Control where data is stored and processed
+- **Encryption**: AES-256 encryption at rest and TLS 1.3 in transit
+- **Zero-Trust Architecture**: Verify every request, trust nothing by default
 
-### 3. Real-Time Observability
+### Rapid Developer Onboarding
 
-Monitor and optimize your AI systems with comprehensive telemetry:
+Get started in minutes, not days:
 
-- **Dashboard Overview**: Real-time metrics for agent performance, latency, and success rates
-- **Telemetry SDK**: Instrument your agents with custom metrics and traces
-- **Cost Tracking**: Monitor token usage and API costs across all LLM providers
-- **Workflow Monitoring**: Track execution paths, bottlenecks, and failure points
+- **10-Minute Setup**: CLI-guided installation with automatic configuration
+- **Interactive Dashboard**: Visual workflow builder and real-time monitoring
+- **TypeScript SDK**: Type-safe SDK with full IntelliSense and auto-completion
+- **Template Library**: Pre-built workflows for common use cases (RAG, Q&A, summarization)
+- **Local Development**: Full platform runs locally with Docker Compose
+
+### 1. Temporal Memory System
+
+Unlike traditional databases, AgentOS provides bi-temporal memory:
+
+- **Bi-Temporal Model**: Track both when data was valid and when it was recorded
+- **Time-Travel Queries**: Query system state at any historical point
+- **History Tracking**: Complete audit trail of all changes with who, what, when
+- **Conflict Resolution**: Automatic handling of concurrent updates
+- **Knowledge Graph**: Neo4j/PostgreSQL-backed graph for complex relationships
+
+### 2. Agent Runtime & Isolation
+
+Secure, isolated execution environments for every agent:
+
+- **Container Isolation**: Each agent runs in its own container/microVM
+- **Resource Limits**: CPU, memory, and network quotas per agent
+- **IAM Integration**: Fine-grained permissions and role-based access
+- **Security Guarantees**: Prevent agent-to-agent interference and data leakage
+- **Runtime Manager**: Dynamic lifecycle management and auto-scaling
+
+### 3. Multi-Agent Orchestration
+
+Coordinate complex workflows with ease:
+
+- **DAG Workflows**: Define agent interactions as directed acyclic graphs
+- **Error Handling**: Automatic retry, fallback, and graceful degradation
+- **Parallelism**: Execute independent agents concurrently for speed
+- **Agent Collaboration**: Built-in protocols for agent-to-agent communication
+- **Task Distribution**: Intelligent workload balancing across agent pools
+
+### 4. Comprehensive Observability
+
+Monitor, trace, and optimize every aspect:
+
+- **Real-Time Dashboards**: Live metrics for latency, success rates, and costs
+- **Distributed Tracing**: Track requests across multiple agents and services
 - **Audit Logs**: Complete history of agent actions and decisions
-
-### 4. Platform Intelligence
-
-Make your agents smarter with cognitive capabilities:
-
-- **Context Intelligence**: Automatically extract and maintain relevant context across interactions
-- **Cognitive Routing**: Route requests to the most appropriate agent based on capability and performance
-- **Knowledge Graph**: Build interconnected knowledge structures for complex reasoning
-- **Memory Engine**: Advanced memory retrieval with semantic understanding and relevance scoring
+- **Cost Tracking**: Monitor token usage and API costs per agent/workflow
+- **Alerting**: Proactive notifications for errors, slowdowns, and anomalies
 
 ### Built for Developers
 
-AgentOS is designed with developer experience in mind:
+Developer experience is a first-class priority:
 
-- **RESTful API**: Complete HTTP API for all platform operations
-- **TypeScript SDK**: Type-safe SDK with full IntelliSense support
-- **Clear Documentation**: Comprehensive guides with working examples
-- **Error Handling**: Graceful degradation and detailed error messages
-- **Local Development**: Run the entire platform locally with Docker Compose
-
-### Production-Grade Features
-
-Deploy with confidence using enterprise-ready capabilities:
-
-- Sub-second response times for critical operations
-- Horizontal scaling support for high-traffic applications
-- Built-in monitoring and health checks
-- Comprehensive audit trails and security controls
-- Multi-LLM support (OpenAI, Anthropic, and more)
+- **CLI Tools**: `agentos deploy`, `agentos logs`, `agentos debug` for rapid iteration
+- **REST API**: Complete HTTP API with OpenAPI/Swagger documentation
+- **TypeScript SDK**: Type-safe SDK with classes, methods, and interfaces
+- **Error Messages**: Clear, actionable error messages with suggested fixes
+- **Hot Reload**: Changes reflected instantly during local development
 
 ## Core Capabilities
 
@@ -354,32 +382,32 @@ curl -X POST http://localhost:3001/api/platform/route \\
 
 ## Use Cases
 
-AgentOS powers a wide range of intelligent applications across industries:
+AgentOS powers mission-critical applications across industries:
 
 <FeatureGrid>
   <FeatureCard
-    title="Multi-Agent Customer Support"
-    description="Orchestrate specialized agents for routing, resolution, and escalation with full observability"
+    title="Compliance & Audit Systems"
+    description="Track every decision with temporal queries and immutable audit logs for regulatory compliance"
   />
   <FeatureCard
-    title="Intelligent Code Assistants"
-    description="Coordinate review, testing, and documentation agents with context-aware routing"
+    title="RAG Pipelines"
+    description="Build retrieval-augmented generation systems with temporal memory and knowledge graphs"
   />
   <FeatureCard
-    title="Learning Platforms"
-    description="Adaptive educational systems that remember progress and route to specialized tutors"
+    title="Document Processing"
+    description="Orchestrate extraction, summarization, and classification agents with full traceability"
   />
   <FeatureCard
-    title="Enterprise Knowledge Systems"
-    description="Build knowledge graphs, route queries intelligently, and track usage patterns"
+    title="Customer Support Automation"
+    description="Multi-agent workflows with routing, resolution, and escalation with complete audit trails"
   />
   <FeatureCard
-    title="AI-Powered Workflows"
-    description="Automate complex business processes with monitored multi-agent workflows"
+    title="Financial Services"
+    description="Secure, isolated agents for trading, risk analysis, and compliance with time-travel queries"
   />
   <FeatureCard
-    title="Research Assistants"
-    description="Coordinate data gathering, analysis, and synthesis agents with memory persistence"
+    title="Healthcare AI"
+    description="HIPAA-compliant agents with audit logs, data residency, and temporal patient records"
   />
 </FeatureGrid>
 
@@ -390,107 +418,98 @@ Ready to build your first intelligent AI system? Here's your learning path:
 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
   <Card>
     <CardHeader>
-      <CardTitle>1. Quickstart</CardTitle>
+      <CardTitle>1. Quickstart Guide</CardTitle>
       <CardDescription>Get AgentOS running in 10 minutes</CardDescription>
     </CardHeader>
     <CardContent>
-      <p className="text-sm">Install dependencies, configure environment, and create your first agent.</p>
+      <p className="text-sm">Install CLI, launch dashboard, and deploy your first agent with temporal memory.</p>
       <a href="/docs/quickstart" className="text-sm font-medium text-primary hover:underline mt-2 inline-block">
         Start here →
       </a>
     </CardContent>
   </Card>
 
-{" "}
-
-<Card>
-  <CardHeader>
-    <CardTitle>2. Core Concepts</CardTitle>
-    <CardDescription>Understand the platform architecture</CardDescription>
-  </CardHeader>
-  <CardContent>
-    <p className="text-sm">
-      Learn about memory, orchestration, observability, and platform
-      intelligence.
-    </p>
-    <a
-      href="/docs/core-concepts"
-      className="text-sm font-medium text-primary hover:underline mt-2 inline-block"
-    >
-      Learn concepts →
-    </a>
-  </CardContent>
-</Card>
-
-{" "}
-
-<Card>
-  <CardHeader>
-    <CardTitle>3. Memory System</CardTitle>
-    <CardDescription>Build agents with contextual memory</CardDescription>
-  </CardHeader>
-  <CardContent>
-    <p className="text-sm">
-      Explore STM/LTM, memory types, and intelligent retrieval strategies.
-    </p>
-    <a
-      href="/docs/sdk/memory-system"
-      className="text-sm font-medium text-primary hover:underline mt-2 inline-block"
-    >
-      Explore memory →
-    </a>
-  </CardContent>
-</Card>
-
-{" "}
-
-<Card>
-  <CardHeader>
-    <CardTitle>4. Multi-Agent Orchestration</CardTitle>
-    <CardDescription>Coordinate complex workflows</CardDescription>
-  </CardHeader>
-  <CardContent>
-    <p className="text-sm">
-      Create workflow graphs, manage agent lifecycles, and enable collaboration.
-    </p>
-    <a
-      href="/docs/orchestration/multi-agent"
-      className="text-sm font-medium text-primary hover:underline mt-2 inline-block"
-    >
-      Build workflows →
-    </a>
-  </CardContent>
-</Card>
-
-{" "}
-
-<Card>
-  <CardHeader>
-    <CardTitle>5. Observability</CardTitle>
-    <CardDescription>Monitor and optimize performance</CardDescription>
-  </CardHeader>
-  <CardContent>
-    <p className="text-sm">
-      Track metrics, monitor costs, and gain insights into agent behavior.
-    </p>
-    <a
-      href="/docs/observability/dashboard"
-      className="text-sm font-medium text-primary hover:underline mt-2 inline-block"
-    >
-      Setup monitoring →
-    </a>
-  </CardContent>
-</Card>
+  <Card>
+    <CardHeader>
+      <CardTitle>2. Core Concepts</CardTitle>
+      <CardDescription>Understand the platform fundamentals</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm">
+        Learn about temporal memory, agent isolation, orchestration, and observability.
+      </p>
+      <a
+        href="/docs/concepts/temporal-memory"
+        className="text-sm font-medium text-primary hover:underline mt-2 inline-block"
+      >
+        Learn concepts →
+      </a>
+    </CardContent>
+  </Card>
 
   <Card>
     <CardHeader>
-      <CardTitle>6. Platform Intelligence</CardTitle>
-      <CardDescription>Add cognitive capabilities</CardDescription>
+      <CardTitle>3. Build Your First Agent</CardTitle>
+      <CardDescription>Step-by-step tutorial</CardDescription>
     </CardHeader>
     <CardContent>
-      <p className="text-sm">Implement context intelligence, cognitive routing, and knowledge graphs.</p>
-      <a href="/docs/platform/context-intelligence" className="text-sm font-medium text-primary hover:underline mt-2 inline-block">
-        Explore intelligence →
+      <p className="text-sm">
+        Create a basic agent with temporal memory and audit logging.
+      </p>
+      <a
+        href="/docs/tutorials/basic-agent"
+        className="text-sm font-medium text-primary hover:underline mt-2 inline-block"
+      >
+        Start tutorial →
+      </a>
+    </CardContent>
+  </Card>
+
+  <Card>
+    <CardHeader>
+      <CardTitle>4. Create a Workflow</CardTitle>
+      <CardDescription>Multi-agent orchestration</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm">
+        Build DAG workflows with multiple agents, error handling, and monitoring.
+      </p>
+      <a
+        href="/docs/tutorials/workflow"
+        className="text-sm font-medium text-primary hover:underline mt-2 inline-block"
+      >
+        Build workflow →
+      </a>
+    </CardContent>
+  </Card>
+
+  <Card>
+    <CardHeader>
+      <CardTitle>5. Temporal Memory Queries</CardTitle>
+      <CardDescription>Time-travel and audit trails</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm">
+        Write queries to access historical data and track changes over time.
+      </p>
+      <a
+        href="/docs/tutorials/memory-queries"
+        className="text-sm font-medium text-primary hover:underline mt-2 inline-block"
+      >
+        Learn queries →
+      </a>
+    </CardContent>
+  </Card>
+
+  <Card>
+    <CardHeader>
+      <CardTitle>6. Deploy to Production</CardTitle>
+      <CardDescription>Cloud deployment guide</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm">Deploy with agent isolation, scaling, and enterprise security.</p>
+      <a href="/docs/tutorials/cloud-deployment" className="text-sm font-medium text-primary hover:underline mt-2 inline-block">
+        Deploy now →
       </a>
     </CardContent>
   </Card>

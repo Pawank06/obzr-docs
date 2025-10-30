@@ -1,0 +1,258 @@
+# Temporal Memory
+
+AgentOS uses a bi-temporal memory system that tracks both when data was valid in the real world and when it was recorded in the system, enabling powerful time-travel queries and complete audit trails.
+
+## What is Temporal Memory?
+
+Traditional databases only track the current state of data. Temporal databases track the complete history of changes, allowing you to:
+
+- Query data as it existed at any point in time
+- Track who changed what and when
+- Maintain complete audit trails for compliance
+- Resolve conflicts in distributed systems
+- Understand data evolution over time
+
+## Bi-Temporal Model
+
+AgentOS implements a bi-temporal model with two time dimensions:
+
+### Transaction Time
+
+When data was recorded in the database:
+
+- **System-controlled**: Automatically managed by AgentOS
+- **Immutable**: Cannot be changed once recorded
+- **Audit trail**: Complete history of all transactions
+- **Use case**: "What did we know at time X?"
+
+### Valid Time
+
+When data was actually valid in the real world:
+
+- **User-controlled**: Set by your application
+- **Can be backdated**: Record historical events
+- **Business logic**: Reflects real-world validity
+- **Use case**: "What was true at time X?"
+
+<Card>
+  <CardHeader>
+    <CardTitle>Example: Employee Salary</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <CodeBlock language="text">
+{`Scenario: Employee gets a raise effective Jan 1, but HR records it on Jan 15
+
+Valid Time: Jan 1, 2024 (when raise became effective)
+Transaction Time: Jan 15, 2024 (when HR entered it)
+
+This allows you to:
+- Query salary as of Jan 1 (includes raise)
+- Query what HR knew on Jan 10 (no raise yet)
+- Audit when the change was made (Jan 15)`}
+    </CodeBlock>
+  </CardContent>
+</Card>
+
+## Time-Travel Queries
+
+Query data as it existed at any point in time:
+
+<Tabs defaultValue="typescript">
+  <TabsList>
+    <TabsTrigger value="typescript">TypeScript</TabsTrigger>
+    <TabsTrigger value="curl">cURL</TabsTrigger>
+  </TabsList>
+  <TabsContent value="typescript">
+    <CodeBlock language="typescript">
+{`import { AgentOS } from '@agentos/sdk';
+
+const client = new AgentOS({
+  apiKey: process.env.AGENTOS_API_KEY
+});
+
+// Query current state
+const current = await client.memory.query({
+  entity: 'user',
+  id: 'user-123'
+});
+
+// Query as of specific valid time
+const historical = await client.memory.query({
+  entity: 'user',
+  id: 'user-123',
+  asOf: {
+    validTime: '2024-01-01T00:00:00Z'
+  }
+});
+
+// Query what system knew at specific transaction time
+const systemView = await client.memory.query({
+  entity: 'user',
+  id: 'user-123',
+  asOf: {
+    transactionTime: '2024-01-15T10:00:00Z'
+  }
+});
+
+// Query both dimensions
+const precise = await client.memory.query({
+  entity: 'user',
+  id: 'user-123',
+  asOf: {
+    validTime: '2024-01-01T00:00:00Z',
+    transactionTime: '2024-01-15T10:00:00Z'
+  }
+});`}
+    </CodeBlock>
+  </TabsContent>
+  <TabsContent value="curl">
+    <CodeBlock language="bash">
+{`# Query current state
+curl -X GET http://localhost:3001/api/memory/query \\
+  -H "Authorization: Bearer <token>" \\
+  -d '{
+    "entity": "user",
+    "id": "user-123"
+  }'
+
+# Query historical state
+curl -X GET http://localhost:3001/api/memory/query \\
+  -H "Authorization: Bearer <token>" \\
+  -d '{
+    "entity": "user",
+    "id": "user-123",
+    "asOf": {
+      "validTime": "2024-01-01T00:00:00Z"
+    }
+  }'`}
+    </CodeBlock>
+  </TabsContent>
+</Tabs>
+
+## History Tracking
+
+Track complete history of changes:
+
+<CodeBlock language="typescript">
+{`// Get full history of an entity
+const history = await client.memory.getHistory({
+  entity: 'user',
+  id: 'user-123',
+  from: '2024-01-01T00:00:00Z',
+  to: '2024-12-31T23:59:59Z'
+});
+
+// Returns array of changes
+history.forEach(change => {
+  console.log(\`Changed at: \${change.transactionTime}\`);
+  console.log(\`Valid from: \${change.validFrom}\`);
+  console.log(\`Valid to: \${change.validTo}\`);
+  console.log(\`Changed by: \${change.userId}\`);
+  console.log(\`Changes: \${JSON.stringify(change.diff)}\`);
+});`}
+</CodeBlock>
+
+## Conflict Resolution
+
+Handle concurrent updates with temporal conflict resolution:
+
+<CodeBlock language="typescript">
+{`// Attempt to update with optimistic locking
+try {
+  await client.memory.update({
+    entity: 'user',
+    id: 'user-123',
+    data: { status: 'active' },
+    expectedVersion: 5  // Optimistic lock
+  });
+} catch (error) {
+  if (error.code === 'CONFLICT') {
+    // Get conflicting versions
+    const conflicts = error.conflicts;
+    
+    // Resolve conflict
+    const resolved = await client.memory.resolveConflict({
+      entity: 'user',
+      id: 'user-123',
+      strategy: 'last-write-wins',  // or 'merge', 'manual'
+      conflicts: conflicts
+    });
+  }
+}`}
+</CodeBlock>
+
+## Knowledge Graph Integration
+
+Temporal memory integrates with Neo4j for complex relationships:
+
+<CodeBlock language="typescript">
+{`// Store relationship with temporal data
+await client.memory.createRelationship({
+  from: { entity: 'user', id: 'user-123' },
+  to: { entity: 'team', id: 'team-456' },
+  type: 'MEMBER_OF',
+  validFrom: '2024-01-01T00:00:00Z',
+  validTo: '2024-12-31T23:59:59Z',
+  properties: {
+    role: 'developer',
+    level: 'senior'
+  }
+});
+
+// Query relationships at specific time
+const relationships = await client.memory.queryRelationships({
+  entity: 'user',
+  id: 'user-123',
+  asOf: {
+    validTime: '2024-06-01T00:00:00Z'
+  }
+});`}
+</CodeBlock>
+
+## Audit Compliance
+
+Temporal memory provides complete audit trails:
+
+- **Immutable logs**: All changes are permanently recorded
+- **Who, what, when**: Track user, action, and timestamp
+- **Tamper detection**: Cryptographic verification of logs
+- **Compliance reports**: Generate audit reports for regulators
+- **Data retention**: Configurable retention policies
+
+## Performance Considerations
+
+Temporal queries are optimized for performance:
+
+- **Indexes**: Automatic indexing on time dimensions
+- **Caching**: Redis cache for recent queries
+- **Partitioning**: Time-based partitioning for large datasets
+- **Compression**: Historical data is compressed
+- **Query optimization**: Smart query planning
+
+## Next Steps
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+  <Card>
+    <CardHeader>
+      <CardTitle>Temporal Memory Queries Tutorial</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm">Learn how to write time-travel queries</p>
+      <a href="/docs/tutorials/memory-queries" className="text-sm font-medium text-primary hover:underline mt-2 inline-block">
+        Start tutorial →
+      </a>
+    </CardContent>
+  </Card>
+
+  <Card>
+    <CardHeader>
+      <CardTitle>Memory API Reference</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm">Complete API documentation for temporal memory</p>
+      <a href="/docs/api/memory" className="text-sm font-medium text-primary hover:underline mt-2 inline-block">
+        View API →
+      </a>
+    </CardContent>
+  </Card>
+</div>

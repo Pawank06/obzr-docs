@@ -18,7 +18,7 @@ export default function DocsLayout({
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "18rem",
+          "--sidebar-width": "20rem",
         } as React.CSSProperties
       }
     >

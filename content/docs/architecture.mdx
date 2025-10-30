@@ -1,0 +1,211 @@
+# Architecture
+
+AgentOS is built on a modular, scalable architecture designed for enterprise-grade AI agent deployments.
+
+## System Overview
+
+AgentOS consists of several key layers that work together to provide a complete AI agent platform:
+
+<Card>
+  <CardHeader>
+    <CardTitle>Architecture Layers</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <CodeBlock language="text">
+{`┌─────────────────────────────────────────────────────────────┐
+│                     Client Layer                            │
+│  • React Dashboard  • CLI Tools  • SDK Integration          │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   API Gateway Layer                         │
+│  • Authentication  • Rate Limiting  • Request Validation    │
+└─────────────────────────────────────────────────────────────┘
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        ▼                     ▼                     ▼
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│   Temporal   │    │    Agent     │    │Observability │
+│   Memory     │    │   Runtime    │    │   Platform   │
+│              │    │              │    │              │
+│ • Bi-Temp    │    │ • Isolation  │    │ • Telemetry  │
+│ • Knowledge  │    │ • Containers │    │ • Metrics    │
+│   Graph      │    │ • IAM        │    │ • Audit Logs │
+└──────────────┘    └──────────────┘    └──────────────┘
+        │                     │                     │
+        └─────────────────────┼─────────────────────┘
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  Orchestration Engine                       │
+│  • DAG Workflows  • Task Distribution  • Error Handling     │
+└─────────────────────────────────────────────────────────────┘
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        ▼                     ▼                     ▼
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│ Data Stores  │    │ AI Services  │    │  Security    │
+│              │    │              │    │              │
+│ • PostgreSQL │    │ • OpenAI     │    │ • Encryption │
+│ • Redis      │    │ • Anthropic  │    │ • RBAC       │
+│ • Neo4j      │    │ • Custom LLM │    │ • Audit      │
+└──────────────┘    └──────────────┘    └──────────────┘`}
+    </CodeBlock>
+  </CardContent>
+</Card>
+
+## Core Components
+
+### 1. Temporal Memory System
+
+The temporal memory system uses a bi-temporal data model to track both transaction time and valid time:
+
+- **Transaction Time**: When data was recorded in the system
+- **Valid Time**: When data was actually valid in the real world
+- **Time-Travel Queries**: Query system state at any historical point
+- **Knowledge Graph**: Neo4j-backed graph for complex relationships
+
+### 2. Agent Runtime
+
+Secure, isolated execution environments for agents:
+
+- **Container Isolation**: Each agent runs in its own container/microVM
+- **Resource Limits**: CPU, memory, and network quotas
+- **IAM Integration**: Fine-grained permissions and RBAC
+- **Lifecycle Management**: Automatic scaling and health monitoring
+
+### 3. Orchestration Engine
+
+Coordinate complex multi-agent workflows:
+
+- **DAG Workflows**: Define agent interactions as directed acyclic graphs
+- **Task Distribution**: Intelligent workload balancing
+- **Error Handling**: Automatic retry and fallback mechanisms
+- **Parallelism**: Execute independent agents concurrently
+
+### 4. Observability Platform
+
+Complete visibility into agent operations:
+
+- **Distributed Tracing**: Track requests across agents
+- **Metrics Collection**: Real-time performance data
+- **Audit Logs**: Immutable record of all actions
+- **Cost Tracking**: Monitor token usage and API costs
+
+## Data Flow
+
+<Tabs defaultValue="request">
+  <TabsList>
+    <TabsTrigger value="request">Request Flow</TabsTrigger>
+    <TabsTrigger value="memory">Memory Flow</TabsTrigger>
+  </TabsList>
+  <TabsContent value="request">
+    <CodeBlock language="text">
+{`1. Client Request
+   ↓
+2. API Gateway (Auth, Rate Limit)
+   ↓
+3. Orchestration Engine (Route to Agent)
+   ↓
+4. Agent Runtime (Execute in Isolation)
+   ↓
+5. Temporal Memory (Read/Write)
+   ↓
+6. AI Service (LLM Call)
+   ↓
+7. Observability (Log, Trace, Metric)
+   ↓
+8. Response to Client`}
+    </CodeBlock>
+  </TabsContent>
+  <TabsContent value="memory">
+    <CodeBlock language="text">
+{`1. Memory Write Request
+   ↓
+2. Temporal Memory System
+   ↓
+3. Bi-Temporal Validation
+   ↓
+4. Knowledge Graph Update (Neo4j)
+   ↓
+5. Relational Store (PostgreSQL)
+   ↓
+6. Cache Update (Redis)
+   ↓
+7. Audit Log Entry
+   ↓
+8. Confirmation Response`}
+    </CodeBlock>
+  </TabsContent>
+</Tabs>
+
+## Deployment Architecture
+
+AgentOS supports multiple deployment models:
+
+### Single-Node Deployment
+
+Perfect for development and small-scale production:
+
+- All components on one server
+- Docker Compose orchestration
+- Local data stores
+- Suitable for up to 10 agents
+
+### Multi-Node Deployment
+
+For production workloads:
+
+- Separate nodes for API, agents, and data
+- Kubernetes orchestration
+- Distributed data stores
+- Horizontal scaling
+- Load balancing
+
+### Cloud-Native Deployment
+
+Enterprise-grade deployment:
+
+- Multi-region support
+- Auto-scaling agent pools
+- Managed data stores
+- CDN integration
+- Disaster recovery
+
+## Security Architecture
+
+Security is built into every layer:
+
+- **Network Security**: TLS 1.3, VPC isolation, firewall rules
+- **Application Security**: RBAC, JWT tokens, API keys
+- **Data Security**: AES-256 encryption, data residency controls
+- **Agent Security**: Container isolation, resource limits, IAM
+- **Audit Security**: Immutable logs, tamper detection
+
+## Next Steps
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+  <Card>
+    <CardHeader>
+      <CardTitle>Temporal Memory</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm">Learn about bi-temporal data model and time-travel queries</p>
+      <a href="/docs/concepts/temporal-memory" className="text-sm font-medium text-primary hover:underline mt-2 inline-block">
+        Read more →
+      </a>
+    </CardContent>
+  </Card>
+
+  <Card>
+    <CardHeader>
+      <CardTitle>Agent Runtime</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm">Understand agent isolation and security guarantees</p>
+      <a href="/docs/concepts/agent-runtime" className="text-sm font-medium text-primary hover:underline mt-2 inline-block">
+        Read more →
+      </a>
+    </CardContent>
+  </Card>
+</div>

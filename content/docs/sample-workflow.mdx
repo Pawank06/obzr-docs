@@ -1,0 +1,282 @@
+# Sample Workflow
+
+Learn how to build a complete AI workflow with AgentOS by following this practical example of a Q&A bot with temporal memory.
+
+## Overview
+
+In this guide, we'll build a customer support Q&A bot that:
+
+- Answers customer questions using RAG (Retrieval-Augmented Generation)
+- Stores conversation history in temporal memory
+- Routes complex questions to specialized agents
+- Tracks all interactions with audit logs
+
+## Architecture
+
+<CodeBlock language="text">
+{`┌─────────────┐
+│   Customer  │
+│   Question  │
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐
+│ Classifier  │ ← Determines question type
+│   Agent     │
+└──────┬──────┘
+       │
+       ├─────────────┐
+       ▼             ▼
+┌─────────────┐ ┌─────────────┐
+│  Knowledge  │ │  Escalation │
+│    Agent    │ │    Agent    │
+└──────┬──────┘ └──────┬──────┘
+       │               │
+       └───────┬───────┘
+               ▼
+        ┌─────────────┐
+        │  Response   │
+        │  Generator  │
+        └─────────────┘`}
+</CodeBlock>
+
+## Step 1: Install AgentOS CLI
+
+<Tabs defaultValue="npm">
+  <TabsList>
+    <TabsTrigger value="npm">npm</TabsTrigger>
+    <TabsTrigger value="yarn">yarn</TabsTrigger>
+  </TabsList>
+  <TabsContent value="npm">
+    <CodeBlock language="bash">
+{`npm install -g @agentos/cli
+agentos --version`}
+    </CodeBlock>
+  </TabsContent>
+  <TabsContent value="yarn">
+    <CodeBlock language="bash">
+{`yarn global add @agentos/cli
+agentos --version`}
+    </CodeBlock>
+  </TabsContent>
+</Tabs>
+
+## Step 2: Create a New Project
+
+<CodeBlock language="bash">
+{`# Create project
+agentos init customer-support-bot
+cd customer-support-bot
+
+# Start local development environment
+agentos dev`}
+</CodeBlock>
+
+## Step 3: Define the Workflow
+
+Create a workflow configuration file:
+
+<CodeBlock language="yaml">
+{`# workflow.yaml
+name: customer-support-workflow
+version: 1.0.0
+
+agents:
+  - id: classifier
+    type: intent-classifier
+    model: gpt-4o-mini
+    config:
+      categories:
+        - technical
+        - billing
+        - general
+  
+  - id: knowledge-agent
+    type: rag-agent
+    model: gpt-4o
+    config:
+      knowledge_base: customer-docs
+      max_context: 5
+  
+  - id: escalation-agent
+    type: human-handoff
+    config:
+      notify: support@company.com
+
+edges:
+  - from: classifier
+    to: knowledge-agent
+    condition: category != 'complex'
+  
+  - from: classifier
+    to: escalation-agent
+    condition: category == 'complex'
+
+memory:
+  enabled: true
+  retention: 90d
+  audit: true`}
+</CodeBlock>
+
+## Step 4: Implement the Classifier Agent
+
+<Tabs defaultValue="typescript">
+  <TabsList>
+    <TabsTrigger value="typescript">TypeScript</TabsTrigger>
+    <TabsTrigger value="python">Python</TabsTrigger>
+  </TabsList>
+  <TabsContent value="typescript">
+    <CodeBlock language="typescript">
+{`import { Agent, AgentOS } from '@agentos/sdk';
+
+const client = new AgentOS({
+  apiKey: process.env.AGENTOS_API_KEY
+});
+
+// Create classifier agent
+const classifier = await client.agents.create({
+  id: 'classifier',
+  name: 'Intent Classifier',
+  type: 'intent-classifier',
+  config: {
+    model: 'gpt-4o-mini',
+    systemPrompt: \`You are a customer support classifier.
+    Categorize questions as: technical, billing, or general.\`,
+    categories: ['technical', 'billing', 'general']
+  }
+});
+
+// Process a question
+const result = await classifier.process({
+  input: "How do I reset my password?",
+  context: {
+    userId: "user-123",
+    sessionId: "session-456"
+  }
+});
+
+console.log('Category:', result.category);
+console.log('Confidence:', result.confidence);`}
+    </CodeBlock>
+  </TabsContent>
+  <TabsContent value="python">
+    <CodeBlock language="python">
+{`from agentos import AgentOS, Agent
+
+client = AgentOS(api_key=os.getenv("AGENTOS_API_KEY"))
+
+# Create classifier agent
+classifier = client.agents.create(
+    id="classifier",
+    name="Intent Classifier",
+    type="intent-classifier",
+    config={
+        "model": "gpt-4o-mini",
+        "system_prompt": """You are a customer support classifier.
+        Categorize questions as: technical, billing, or general.""",
+        "categories": ["technical", "billing", "general"]
+    }
+)
+
+# Process a question
+result = classifier.process(
+    input="How do I reset my password?",
+    context={
+        "user_id": "user-123",
+        "session_id": "session-456"
+    }
+)
+
+print(f"Category: {result.category}")
+print(f"Confidence: {result.confidence}")`}
+    </CodeBlock>
+  </TabsContent>
+</Tabs>
+
+## Step 5: Deploy the Workflow
+
+<CodeBlock language="bash">
+{`# Deploy to AgentOS
+agentos deploy workflow.yaml
+
+# Check deployment status
+agentos status customer-support-workflow
+
+# View logs
+agentos logs customer-support-workflow --follow`}
+</CodeBlock>
+
+## Step 6: Test the Workflow
+
+<Tabs defaultValue="cli">
+  <TabsList>
+    <TabsTrigger value="cli">CLI</TabsTrigger>
+    <TabsTrigger value="api">API</TabsTrigger>
+  </TabsList>
+  <TabsContent value="cli">
+    <CodeBlock language="bash">
+{`# Test with CLI
+agentos run customer-support-workflow \\
+  --input "How do I reset my password?" \\
+  --user-id "user-123"`}
+    </CodeBlock>
+  </TabsContent>
+  <TabsContent value="api">
+    <CodeBlock language="bash">
+{`# Test with API
+curl -X POST http://localhost:3001/api/workflows/customer-support-workflow/execute \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer <token>" \\
+  -d '{
+    "input": "How do I reset my password?",
+    "context": {
+      "userId": "user-123",
+      "sessionId": "session-456"
+    }
+  }'`}
+    </CodeBlock>
+  </TabsContent>
+</Tabs>
+
+## Step 7: Monitor with Dashboard
+
+Open the AgentOS dashboard to monitor your workflow:
+
+<CodeBlock language="bash">
+{`agentos dashboard`}
+</CodeBlock>
+
+The dashboard shows:
+- Real-time execution metrics
+- Agent performance
+- Memory usage
+- Cost tracking
+- Audit logs
+
+## Next Steps
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+  <Card>
+    <CardHeader>
+      <CardTitle>Add Temporal Memory</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm">Learn how to query historical data and track changes</p>
+      <a href="/docs/tutorials/memory-queries" className="text-sm font-medium text-primary hover:underline mt-2 inline-block">
+        Learn more →
+      </a>
+    </CardContent>
+  </Card>
+
+  <Card>
+    <CardHeader>
+      <CardTitle>Production Deployment</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm">Deploy to cloud with scaling and security</p>
+      <a href="/docs/tutorials/cloud-deployment" className="text-sm font-medium text-primary hover:underline mt-2 inline-block">
+        Deploy now →
+      </a>
+    </CardContent>
+  </Card>
+</div>

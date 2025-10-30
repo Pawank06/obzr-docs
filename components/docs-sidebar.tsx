@@ -42,114 +42,105 @@ const data = {
           url: "/docs/introduction",
         },
         {
-          title: "Quickstart",
+          title: "Quickstart Guide",
           url: "/docs/quickstart",
         },
         {
-          title: "Installation",
-          url: "/docs/installation",
+          title: "Architecture",
+          url: "/docs/architecture",
         },
         {
-          title: "Core Concepts",
-          url: "/docs/core-concepts",
-        },
-      ],
-    },
-    {
-      title: "SDK Core",
-      items: [
-        {
-          title: "Creating Agents",
-          url: "/docs/sdk/creating-agents",
-        },
-        {
-          title: "Memory System",
-          url: "/docs/sdk/memory-system",
-        },
-        {
-          title: "STM & LTM",
-          url: "/docs/sdk/stm-ltm",
-        },
-        {
-          title: "Task Capabilities",
-          url: "/docs/sdk/task-capabilities",
-        },
-        {
-          title: "Persistence Layer",
-          url: "/docs/sdk/persistence",
-        },
-        {
-          title: "API Integration",
-          url: "/docs/sdk/api-integration",
+          title: "Sample Workflow",
+          url: "/docs/sample-workflow",
         },
       ],
     },
     {
-      title: "Orchestration",
+      title: "Core Concepts",
       items: [
         {
-          title: "Multi-Agent Systems",
-          url: "/docs/orchestration/multi-agent",
+          title: "Temporal Memory",
+          url: "/docs/concepts/temporal-memory",
         },
         {
-          title: "Workflow Graphs",
-          url: "/docs/orchestration/workflow-graphs",
+          title: "Agent Runtime & Isolation",
+          url: "/docs/concepts/agent-runtime",
         },
         {
-          title: "Runtime Manager",
-          url: "/docs/orchestration/runtime-manager",
+          title: "Multi-Agent Orchestration",
+          url: "/docs/concepts/orchestration",
         },
         {
-          title: "Agent Collaboration",
-          url: "/docs/orchestration/collaboration",
+          title: "Observability & Monitoring",
+          url: "/docs/concepts/observability",
+        },
+        {
+          title: "Developer SDK & CLI",
+          url: "/docs/concepts/sdk-cli",
         },
       ],
     },
     {
-      title: "Observability",
+      title: "Tutorials",
       items: [
         {
-          title: "Dashboard Overview",
-          url: "/docs/observability/dashboard",
+          title: "Build a Basic Agent",
+          url: "/docs/tutorials/basic-agent",
         },
         {
-          title: "Telemetry SDK",
-          url: "/docs/observability/telemetry",
+          title: "Create a Workflow",
+          url: "/docs/tutorials/workflow",
         },
         {
-          title: "Monitoring Workflows",
-          url: "/docs/observability/monitoring",
+          title: "Temporal Memory Queries",
+          url: "/docs/tutorials/memory-queries",
         },
         {
-          title: "Cost & Token Tracking",
-          url: "/docs/observability/cost-tracking",
+          title: "Add Audit Logging",
+          url: "/docs/tutorials/audit-logging",
+        },
+        {
+          title: "Deploy to Cloud",
+          url: "/docs/tutorials/cloud-deployment",
         },
       ],
     },
     {
-      title: "Platform Intelligence",
+      title: "Use Cases",
       items: [
         {
-          title: "Context Intelligence",
-          url: "/docs/platform/context-intelligence",
+          title: "RAG Pipeline",
+          url: "/docs/use-cases/rag-pipeline",
         },
         {
-          title: "Cognitive Routing",
-          url: "/docs/platform/cognitive-routing",
+          title: "Document Summarizer",
+          url: "/docs/use-cases/document-summarizer",
         },
         {
-          title: "Knowledge Graph",
-          url: "/docs/platform/knowledge-graph",
+          title: "Customer Support Bot",
+          url: "/docs/use-cases/customer-support",
         },
         {
-          title: "Memory Engine",
-          url: "/docs/platform/memory-engine",
+          title: "Compliance & Audit",
+          url: "/docs/use-cases/compliance-audit",
         },
       ],
     },
     {
       title: "API Reference",
       items: [
+        {
+          title: "REST API",
+          url: "/docs/api/rest",
+        },
+        {
+          title: "TypeScript SDK",
+          url: "/docs/api/typescript-sdk",
+        },
+        {
+          title: "CLI Reference",
+          url: "/docs/api/cli",
+        },
         {
           title: "Agent API",
           url: "/docs/api/agent",
@@ -158,34 +149,64 @@ const data = {
           title: "Memory API",
           url: "/docs/api/memory",
         },
+      ],
+    },
+    {
+      title: "Advanced Guides",
+      items: [
         {
-          title: "Orchestrator API",
-          url: "/docs/api/orchestrator",
+          title: "Memory & Knowledge Graph",
+          url: "/docs/advanced/knowledge-graph",
         },
         {
-          title: "Telemetry API",
-          url: "/docs/api/telemetry",
+          title: "Security & Compliance",
+          url: "/docs/advanced/security",
+        },
+        {
+          title: "Production Deployment",
+          url: "/docs/advanced/production",
+        },
+        {
+          title: "Performance Tuning",
+          url: "/docs/advanced/performance",
         },
       ],
     },
     {
-      title: "Examples & Use Cases",
+      title: "Marketplace",
       items: [
         {
-          title: "AI Customer Support",
-          url: "/docs/examples/customer-support",
+          title: "Skill Marketplace",
+          url: "/docs/marketplace/skills",
         },
         {
-          title: "Developer Assistant",
-          url: "/docs/examples/developer-assistant",
+          title: "Community Agents",
+          url: "/docs/marketplace/community-agents",
         },
         {
-          title: "Knowledge Systems",
-          url: "/docs/examples/knowledge-systems",
+          title: "Submit an Agent",
+          url: "/docs/marketplace/submit",
+        },
+      ],
+    },
+    {
+      title: "Resources",
+      items: [
+        {
+          title: "FAQ",
+          url: "/docs/resources/faq",
         },
         {
-          title: "SaaS Integration",
-          url: "/docs/examples/saas-integration",
+          title: "Troubleshooting",
+          url: "/docs/resources/troubleshooting",
+        },
+        {
+          title: "Release Notes",
+          url: "/docs/resources/release-notes",
+        },
+        {
+          title: "Contributing",
+          url: "/docs/resources/contributing",
         },
       ],
     },
@@ -264,7 +285,7 @@ export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
           <SidebarMenu className="gap-1">
             {data.navMain.map((item) => (
               <SidebarMenuItem key={item.title} className="mt-4 first:mt-0">
-                <h3 className="text-xs font-semibold text-muted-foreground tracking-wider px-3 py-2">
+                <h3 className="text-sm font-semibold text-muted-foreground tracking-wider px-3 py-2">
                   {item.title}
                 </h3>
                 <SidebarMenuSub className="mt-1">
@@ -272,9 +293,9 @@ export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton
                         asChild
-                        className="text-sm px-3 py-1.5 hover:bg-accent rounded-md transition-colors"
+                        className="text-[13px] px-3 py-2 hover:bg-accent rounded-md transition-colors whitespace-normal min-h-[2rem]"
                       >
-                        <a href={subItem.url} className="block w-full">
+                        <a href={subItem.url} className="block w-full leading-relaxed">
                           {subItem.title}
                         </a>
                       </SidebarMenuSubButton>
