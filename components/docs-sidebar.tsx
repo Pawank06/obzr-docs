@@ -62,22 +62,22 @@ const data = {
           title: "Temporal Memory",
           url: "/docs/concepts/temporal-memory",
         },
-        {
-          title: "Agent Runtime & Isolation",
-          url: "/docs/concepts/agent-runtime",
-        },
-        {
-          title: "Multi-Agent Orchestration",
-          url: "/docs/concepts/orchestration",
-        },
-        {
-          title: "Observability & Monitoring",
-          url: "/docs/concepts/observability",
-        },
-        {
-          title: "Developer SDK & CLI",
-          url: "/docs/concepts/sdk-cli",
-        },
+        // {
+        //   title: "Agent Runtime & Isolation",
+        //   url: "/docs/concepts/agent-runtime",
+        // },
+        // {
+        //   title: "Multi-Agent Orchestration",
+        //   url: "/docs/concepts/orchestration",
+        // },
+        // {
+        //   title: "Observability & Monitoring",
+        //   url: "/docs/concepts/observability",
+        // },
+        // {
+        //   title: "Developer SDK & CLI",
+        //   url: "/docs/concepts/sdk-cli",
+        // },
       ],
     },
     {
@@ -98,6 +98,27 @@ const data = {
         {
           title: "Persistence Layer",
           url: "/docs/sdk/persistence",
+        },
+      ],
+    },
+    {
+      title: "Orchestration",
+      items: [
+        {
+          title: "Multi-Agent Systems",
+          url: "/docs/orchestration/multi-agent",
+        },
+        {
+          title: "Workflow Graphs",
+          url: "/docs/orchestration/workflow-graphs",
+        },
+        {
+          title: "Runtime Manager",
+          url: "/docs/orchestration/runtime-manager",
+        },
+        {
+          title: "Agent Collaboration",
+          url: "/docs/orchestration/collaboration",
         },
       ],
     },
