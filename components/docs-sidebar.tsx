@@ -81,6 +81,27 @@ const data = {
       ],
     },
     {
+      title: "Memory System",
+      items: [
+        {
+          title: "Overview",
+          url: "/docs/sdk/memory-system",
+        },
+        {
+          title: "STM & LTM",
+          url: "/docs/sdk/stm-ltm",
+        },
+        {
+          title: "Memory Engine",
+          url: "/docs/platform/memory-engine",
+        },
+        {
+          title: "Persistence Layer",
+          url: "/docs/sdk/persistence",
+        },
+      ],
+    },
+    {
       title: "Tutorials",
       items: [
         {
